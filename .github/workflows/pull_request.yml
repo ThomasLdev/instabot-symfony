@@ -18,6 +18,8 @@ jobs:
                 run: make start-test
             -   name: Check running containers
                 run: docker ps -a
+            -   name: Make sure that the database exists
+                run: make create-test-db
             -   name: Wait for database connection
                 run: make wait-for-db
             -   name: Run migrations

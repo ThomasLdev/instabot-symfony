@@ -265,6 +265,9 @@ else
 	$(ERROR_ONLY_FOR_HOST)
 endif
 
+create-test-db: ## Create the test database if not exists
+	@make exec cmd="php bin/console doctrine:database:create --if-not-exists --env=test"
+
 logs-rabbitmq: ## Shows logs from the rabbitmq container. Use ctrl+c in order to exit
 ifeq ($(INSIDE_DOCKER_CONTAINER), 0)
 	@docker logs -f ${COMPOSE_PROJECT_NAME}-rabbitmq
