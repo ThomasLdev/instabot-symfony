@@ -1,0 +1,35 @@
+name: Instabot Deployment
+
+on:
+    push:
+        branches:
+            - main
+    release:
+        types: [ published ]
+
+jobs:
+    deploy:
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v4
+            -   name: Build the docker images
+                run: make build-test
+            -   name: Deploy to Server
+                uses: easingthemes/ssh-deploy@main
+                with:
+                    SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+                    ARGS: "-rlgoDzvc -i --delete"
+                    SOURCE: "dist/"
+                    REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+                    REMOTE_USER: ${{ secrets.REMOTE_USER }}
+                    TARGET: ${{ secrets.REMOTE_TARGET }}
+                    EXCLUDE: "/dist/, /node_modules/, /vendor, /var"
+            -   name: Install dependencies on remote server
+                run: composer install --prefer-dist --no-progress --no-suggest --no-interaction --no-dev
+            -   name: Delete prod cache to prevent any cache error
+                run: rm -rf ./var/cache/prod
+            -   name: Warmup prod cache
+                run: php bin/console cache:warmup --env=prod
+            -   name: Database Migrations on remote server
+                run: php bin/console doctrine:migrations:migrate --no-interaction
