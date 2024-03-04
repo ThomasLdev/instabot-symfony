@@ -1,2 +1,2 @@
-# create testing database
-CREATE DATABASE IF NOT EXISTS `instabot_dev`;
+# create dev database
+CREATE DATABASE IF NOT EXISTS `instabot`;

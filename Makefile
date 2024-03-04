@@ -265,6 +265,9 @@ else
 	$(ERROR_ONLY_FOR_HOST)
 endif
 
+create-test-db: ## Create the test database if not exists
+	@make exec cmd="php bin/console doctrine:database:create --if-not-exists --env=test"
+
 logs-rabbitmq: ## Shows logs from the rabbitmq container. Use ctrl+c in order to exit
 ifeq ($(INSIDE_DOCKER_CONTAINER), 0)
 	@docker logs -f ${COMPOSE_PROJECT_NAME}-rabbitmq
@@ -297,13 +300,13 @@ report-code-coverage: ## Updates code coverage on coveralls.io. Note: COVERALLS_
 	@make exec-bash cmd="export COVERALLS_REPO_TOKEN=${COVERALLS_REPO_TOKEN} && php ./vendor/bin/php-coveralls -v --coverage_clover reports/clover.xml --json_path reports/coverals.json"
 
 phpcs: ## Runs PHP CodeSniffer
-	@make exec-bash cmd="./vendor/bin/phpcs --version && ./vendor/bin/phpcs --standard=PSR12 --colors -p src tests"
+	@make exec-bash cmd="./vendor/bin/phpcs --version && ./vendor/bin/phpcs --standard=PSR12 --colors -p src tests/Unit tests/Functional"
 
 ecs: ## Runs Easy Coding Standard tool
-	@make exec-bash cmd="./vendor/bin/ecs --version && ./vendor/bin/ecs --clear-cache check src tests"
+	@make exec-bash cmd="./vendor/bin/ecs --version && ./vendor/bin/ecs --clear-cache check src tests/Unit tests/Functional"
 
 ecs-fix: ## Runs Easy Coding Standard tool to fix issues
-	@make exec-bash cmd="./vendor/bin/ecs --version && ./vendor/bin/ecs --clear-cache --fix check src tests"
+	@make exec-bash cmd="./vendor/bin/ecs --version && ./vendor/bin/ecs --clear-cache --fix check src tests/Unit tests/Functional"
 
 phpmetrics: ## Generates phpmetrics static analysis report
 ifeq ($(INSIDE_DOCKER_CONTAINER), 1)
