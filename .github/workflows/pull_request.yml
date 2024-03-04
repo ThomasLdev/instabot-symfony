@@ -20,6 +20,8 @@ jobs:
                 run: docker ps -a
             -   name: Wait for database connection
                 run: make wait-for-db
+            -   name: Create test db if not exist
+                run: make create-test-db
             -   name: Run migrations
                 run: make drop-migrate
             -   name: Run test suite
