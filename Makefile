@@ -303,10 +303,10 @@ phpcs: ## Runs PHP CodeSniffer
 	@make exec-bash cmd="./vendor/bin/phpcs --version && ./vendor/bin/phpcs --standard=PSR12 --colors -p src tests"
 
 ecs: ## Runs Easy Coding Standard tool
-	@make exec-bash cmd="./vendor/bin/ecs --version && ./vendor/bin/ecs --clear-cache check src tests"
+	@make exec-bash cmd="./vendor/bin/ecs --version && ./vendor/bin/ecs --clear-cache check src tests/Unit tests/Functional"
 
 ecs-fix: ## Runs Easy Coding Standard tool to fix issues
-	@make exec-bash cmd="./vendor/bin/ecs --version && ./vendor/bin/ecs --clear-cache --fix check src tests"
+	@make exec-bash cmd="./vendor/bin/ecs --version && ./vendor/bin/ecs --clear-cache --fix check src tests/Unit tests/Functional"
 
 phpmetrics: ## Generates phpmetrics static analysis report
 ifeq ($(INSIDE_DOCKER_CONTAINER), 1)
