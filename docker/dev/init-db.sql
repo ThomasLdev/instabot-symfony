@@ -1,2 +1,2 @@
 # create dev database
-CREATE DATABASE IF NOT EXISTS `instabot_dev`;
+CREATE DATABASE IF NOT EXISTS `instabot`;
