@@ -25,5 +25,5 @@ jobs:
                         rm -rf /vendor
                         php ~/composer.phar install --no-dev --optimize-autoloader --no-interaction --no-progress --prefer-dist
                         php bin/console cache:clear --env=prod
-                        npm install --production --no-optional
-                        ./node_modules/.bin/encore production
+                        npm install
+                        npm run build
