@@ -1,0 +1,15 @@
+{% set userIconClass = app.user ? 'fa-solid' : 'fa-regular' %}
+
+<div class="btm-nav">
+    <a href="#" class="text-primary active">
+        <i class="fa-solid fa-house"></i>
+    </a>
+    {% if app.user %}
+        <a href="#" class="text-primary">
+            <i class="fa-solid fa-gears"></i>
+        </a>
+    {% endif %}
+    <a href="#" class="text-primary">
+        <i class="{{ userIconClass }} fa-user"></i>
+    </a>
+</div>

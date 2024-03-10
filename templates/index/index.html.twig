@@ -1,11 +1,21 @@
 {% include 'base.html.twig' %}
 
-<h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl md:text-6xl p-6">
-    <span class="block">
-        Welcome to
-        <span class="text-transparent bg-clip-text bg-gradient-to-tr to-cyan-500 from-blue-600">
-            Instabot
-        </span>
-        in production ! after deploy
-    </span>
-</h1>
+<div class="hero min-h-screen bg-base-200">
+    <div class="hero-content text-center">
+        <div class="max-w-xl">
+            <h1 class="text-4xl font-bold tracking-tight text-primary sm:text-5xl md:text-6xl p-6">
+                <span class="block">
+                    Welcome to
+                    <span class="text-accent">
+                        Instabot
+                    </span>
+                    !
+                </span>
+            </h1>
+            {% if not app.user %}
+                <p class="py-6">Please log in or create an account</p>
+                <button class="btn btn-primary">Let's go !</button>
+            {% endif %}
+        </div>
+    </div>
+</div>
