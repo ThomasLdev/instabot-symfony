@@ -39,5 +39,7 @@ jobs:
                 run: make phpstan
             -   name: Run php mess detector
                 run: make phpmd
+            -   name: Run Eslint
+                run: ./node_modules/.bin/eslint ./assets --fix
             -   name: Stop the docker images
                 run: make stop-test
