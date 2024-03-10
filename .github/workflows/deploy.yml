@@ -1,29 +1,32 @@
 name: Instabot Deployment
 
-on:
-    push:
-        branches:
-            - main
-    release:
-        types: [ published ]
+#on:
+#    push:
+#        branches:
+#            - main
+#    release:
+#        types: [ published ]
 
 jobs:
     deploy:
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+#        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         runs-on: ubuntu-latest
         steps:
-            -   name: Checkout code
-                uses: actions/checkout@v2
-
-            -   name: Rsync files to Server
+            -   uses: actions/checkout@v4
+            -   name: Deploy to Server
                 run: |
-                    rsync -avz --exclude '/vendor' --exclude '/node_modules' --exclude '/var' ./ ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_TARGET }}
-
-            -   name: Install dependencies and compile assets on prod server
-                run: |
-                    ssh -i ${{ secrets.SSH_PRIVATE_KEY }} ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} -p 22 << EOF
-                        cd ${{ secrets.REMOTE_TARGET }}
-                        composer install --no-dev --optimize-autoloader
-                        php bin/console cache:clear --no-warmup --env=prod
-                        php bin/console cache:warmup --env=prod
-                    EOF
+                    echo "Deploying to server"
+                    echo "host name is : ${{ secrets.REMOTE_HOST }}"
+                    echo "Deployed to server"
+#                uses: easingthemes/ssh-deploy@main
+#                with:
+#                    SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+#                    ARGS: "-rlgoDzvc -i --delete"
+#                    REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+#                    REMOTE_USER: ${{ secrets.REMOTE_USER }}
+#                    TARGET: ${{ secrets.REMOTE_TARGET }}
+#                    EXCLUDE: "/dist/, /node_modules/, /vendor/, /var/"
+#                    SCRIPT_AFTER: |
+#                        whoami
+#                        ls -al
+#                        echo $RSYNC_STDOUT
