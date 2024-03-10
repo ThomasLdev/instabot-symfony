@@ -24,4 +24,5 @@ jobs:
                         cd ${{ secrets.REMOTE_TARGET }}
                         ls -lah
                         git pull origin main
+                        rm -rf /vendor && rm -rf /var/cache/*
                         composer install --no-dev --optimize-autoloader --no-interaction --no-progress --no-suggest --prefer-dist
