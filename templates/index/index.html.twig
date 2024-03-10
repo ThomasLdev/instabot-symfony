@@ -13,8 +13,13 @@
                 </span>
             </h1>
             {% if not app.user %}
-                <p class="py-6">Please log in or create an account</p>
-                <button class="btn btn-primary">Let's go !</button>
+                <p class="py-6">
+                    Please <a class="link" href="{{ path('app_login') }}">log in </a>
+                    or <a class="link" href="{{ path('app_register') }}">create an account</a></p>
+            {% endif %}
+
+            {% if app.user and app.user.isVerified is same as false %}
+                <p class="py-6">You have an unconfirmed account. Please check your emails to activate it !</p>
             {% endif %}
         </div>
     </div>

@@ -1,15 +1,15 @@
 {% set userIconClass = app.user ? 'fa-solid' : 'fa-regular' %}
 
 <div class="btm-nav">
-    <a href="#" class="text-primary active">
+    <a href="{{ path('app_index') }}" class="text-primary active">
         <i class="fa-solid fa-house"></i>
     </a>
-    {% if app.user %}
+    {% if app.user and app.user.isVerified is same as true %}
         <a href="#" class="text-primary">
             <i class="fa-solid fa-gears"></i>
         </a>
     {% endif %}
-    <a href="#" class="text-primary">
+    <a href="{{ path(app.user ? 'app_logout' : 'app_login') }}" class="text-primary">
         <i class="{{ userIconClass }} fa-user"></i>
     </a>
 </div>
