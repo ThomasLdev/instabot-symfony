@@ -9,20 +9,19 @@ on:
 
 jobs:
     deploy:
-#        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         runs-on: ubuntu-latest
         environment: production
         steps:
-            -   uses: actions/checkout@v4
             -   name: Deploy to Server
-                uses: easingthemes/ssh-deploy@main
+                uses: appleboy/ssh-action@master
                 with:
-                    SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-                    ARGS: "-rlgoDzvc -i --delete"
-                    REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-                    REMOTE_USER: ${{ secrets.REMOTE_USER }}
-                    TARGET: ${{ secrets.REMOTE_TARGET }}
-                    EXCLUDE: "/dist/, /node_modules/, /vendor/, /var/"
-                    SCRIPT_AFTER: |
+                    host: ${{ secrets.REMOTE_HOST }}
+                    username: ${{ secrets.REMOTE_USER }}
+                    password: ${{ secrets.REMOTE_PASSWORD }}
+                    port: 22
+                    script: |
                         ls -lah
-                        echo $RSYNC_STDOUT
+                        cd ${{ secrets.REMOTE_TARGET }}
+                        ls -lah
+                        git pull origin main
+                        composer install --no-dev --optimize-autoloader --no-interaction --no-progress --no-suggest --prefer-dist
