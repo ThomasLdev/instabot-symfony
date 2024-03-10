@@ -50,6 +50,10 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
+# install nodejs and npm
+RUN curl -sL https://deb.nodesource.com/setup_20.x | bash -
+RUN apt-get -y install nodejs && npm -v
+
 # create document root, fix permissions for www-data user and change owner to www-data
 RUN mkdir -p $APP_HOME/public && \
     mkdir -p /home/$USERNAME && chown $USERNAME:$USERNAME /home/$USERNAME \
@@ -88,5 +92,8 @@ COPY --chown=${USERNAME}:${USERNAME} . $APP_HOME/
 
 # install all PHP dependencies
 RUN COMPOSER_MEMORY_LIMIT=-1 composer install --optimize-autoloader --no-interaction --no-progress --no-suggest
+
+# install JS dependencies
+RUN npm install --dev
 
 USER root

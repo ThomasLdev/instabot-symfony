@@ -346,6 +346,13 @@ else
 	@make exec cmd="make phpinsights"
 endif
 
+eslint: ## Runs Php Insights analysis tool
+ifeq ($(INSIDE_DOCKER_CONTAINER), 1)
+	@npx eslint "./assets/" --fix
+else
+	@make exec cmd="make eslint"
+endif
+
 composer-normalize: ## Normalizes composer.json file content
 	@make exec cmd="composer normalize"
 
