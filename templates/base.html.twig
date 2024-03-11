@@ -14,6 +14,9 @@
         {% endblock %}
     </head>
     <body class="bg-base-200">
+        {% if app.user %}
+            {% include 'ui/actions/panic-button.html.twig' %}
+        {% endif %}
         {% include 'ui/notification/flash-messages.html.twig' %}
         {% include 'ui/nav/navbar.html.twig' %}
         {% block body %}{% endblock %}
