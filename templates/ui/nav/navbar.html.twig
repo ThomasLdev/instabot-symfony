@@ -5,7 +5,7 @@
         <i class="fa-solid fa-house"></i>
     </a>
     {% if app.user and app.user.isVerified is same as true %}
-        <a href="#" class="text-primary">
+        <a href="{{ path('app_settings') }}" class="text-primary">
             <i class="fa-solid fa-gears"></i>
         </a>
     {% endif %}
