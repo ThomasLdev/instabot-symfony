@@ -14,8 +14,8 @@
             </h1>
             {% if not app.user %}
                 <p class="py-6">
-                    Please <a class="link" href="{{ path('app_login') }}">log in </a>
-                    or <a class="link" href="{{ path('app_register') }}">create an account</a></p>
+                    Please <a class="link" href="{{ path('app_login') }}">log in</a>
+                     or <a class="link" href="{{ path('app_register') }}">create an account</a></p>
             {% endif %}
 
             {% if app.user and app.user.isVerified is same as false %}
