@@ -13,7 +13,7 @@ class UserSettingsType extends AbstractType
     {
         $builder
             ->add('googleDriveToken')
-            ->add('googleDriveFolderPath')
+            ->add('googleDriveFolderId')
             ->add('instagramPostFrequency')
             ->add('instagramToken')
         ;

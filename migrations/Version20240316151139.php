@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240311212637 extends AbstractMigration
+final class Version20240316151139 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,12 +20,16 @@ final class Version20240311212637 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE user_settings ADD google_drive_folder_id VARCHAR(255) NOT NULL, ADD instagram_post_frequency VARCHAR(255) DEFAULT NULL, ADD instagram_token VARCHAR(255) NOT NULL');
+        $this->addSql('ALTER TABLE user ADD settings_id INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D64959949888 FOREIGN KEY (settings_id) REFERENCES user_settings (id)');
+        $this->addSql('CREATE UNIQUE INDEX UNIQ_8D93D64959949888 ON user (settings_id)');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE user_settings DROP google_drive_folder_id, DROP instagram_post_frequency, DROP instagram_token');
+        $this->addSql('ALTER TABLE user DROP FOREIGN KEY FK_8D93D64959949888');
+        $this->addSql('DROP INDEX UNIQ_8D93D64959949888 ON user');
+        $this->addSql('ALTER TABLE user DROP settings_id');
     }
 }

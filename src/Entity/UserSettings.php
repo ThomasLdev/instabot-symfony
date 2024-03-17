@@ -17,7 +17,7 @@ class UserSettings
     private ?string $googleDriveToken = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $googleDriveFolderPath = null;
+    private ?string $googleDriveFolderId = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $instagramPostFrequency = null;
@@ -46,14 +46,14 @@ class UserSettings
         return $this;
     }
 
-    public function getGoogleDriveFolderPath(): ?string
+    public function getGoogleDriveFolderId(): ?string
     {
-        return $this->googleDriveFolderPath;
+        return $this->googleDriveFolderId;
     }
 
-    public function setGoogleDriveFolderPath(string $googleDriveFolderPath): static
+    public function setGoogleDriveFolderId(string $googleDriveFolderId): static
     {
-        $this->googleDriveFolderPath = $googleDriveFolderPath;
+        $this->googleDriveFolderId = $googleDriveFolderId;
 
         return $this;
     }

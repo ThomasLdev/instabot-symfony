@@ -38,6 +38,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean')]
     private $isVerified = false;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?UserSettings $settings = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -120,6 +123,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    public function getSettings(): ?UserSettings
+    {
+        return $this->settings;
+    }
+
+    public function setSettings(?UserSettings $settings): static
+    {
+        $this->settings = $settings;
 
         return $this;
     }
