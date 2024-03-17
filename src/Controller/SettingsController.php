@@ -42,7 +42,7 @@ class SettingsController extends AbstractController
 
         $settings = $user->getSettings();
 
-        if ($settings === null) {
+        if (null === $settings) {
             $settings = new UserSettings();
             $user->setSettings($settings);
         }

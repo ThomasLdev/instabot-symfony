@@ -25,7 +25,8 @@ class UserSettings
     #[ORM\Column(length: 255)]
     private ?string $instagramToken = null;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->instagramPostFrequency = '0 0 18 1/1 * ? *'; // every day at 6pm
     }
 

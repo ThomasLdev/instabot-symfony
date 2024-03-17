@@ -43,9 +43,9 @@ return static function (ECSConfig $ecsConfig): void {
         [
             YodaStyleFixer::class,
             [
-                'equal' => false,
-                'identical' => false,
-                'less_and_greater' => false,
+                'equal' => true,
+                'identical' => true,
+                'less_and_greater' => true,
             ],
         ],
         [

@@ -15,6 +15,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordC
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\SecurityRequestAttributes;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
+use UnexpectedValueException;
 
 class AppUserAuthenticator extends AbstractLoginFormAuthenticator
 {
@@ -22,21 +23,32 @@ class AppUserAuthenticator extends AbstractLoginFormAuthenticator
 
     public const LOGIN_ROUTE = 'app_login';
 
-    public function __construct(private readonly UrlGeneratorInterface $urlGenerator)
-    {
+    public function __construct(
+        private readonly UrlGeneratorInterface $urlGenerator
+    ) {
     }
 
     public function authenticate(Request $request): Passport
     {
         $email = $request->request->get('email', '');
+        $password = $request->request->get('password', '');
+        $token = $request->request->get('_csrf_token');
+
+        if (false === is_string($email) || false === is_string($password)) {
+            throw new UnexpectedValueException('Email or password is not a string');
+        }
 
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email);
 
+        if (null !== $token && false === is_string($token)) {
+            throw new UnexpectedValueException('CSRF token is not set');
+        }
+
         return new Passport(
             new UserBadge($email),
-            new PasswordCredentials($request->request->get('password', '')),
+            new PasswordCredentials($password),
             [
-                new CsrfTokenBadge('authenticate', $request->request->get('_csrf_token')),
+                new CsrfTokenBadge('authenticate', $token),
                 new RememberMeBadge(),
             ]
         );
@@ -44,7 +56,9 @@ class AppUserAuthenticator extends AbstractLoginFormAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
+        $targetPath = $this->getTargetPath($request->getSession(), $firewallName);
+
+        if ($targetPath) {
             return new RedirectResponse($targetPath);
         }
 
