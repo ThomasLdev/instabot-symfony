@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+    <div class="hero min-h-screen">
+        <div class="min-w-[25%]">
+            {{ form_start(registrationForm) }}
+
+            <h1 class="text-4xl">Create your account</h1>
+
+            {{ form_errors(registrationForm) }}
+            <div class="flex flex-col gap-5 mt-5 mb-5">
+                <div class="form-control">
+                    {{ form_widget(registrationForm.email, {'attr': {'class': 'input input-bordered input-primary w-full'}}) }}
+                </div>
+                <div class="form-control">
+                    {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'input input-bordered input-primary w-full'}}) }}
+                </div>
+            </div>
+
+            <div class="flex flex-col">
+                <button type="submit" class="btn btn-lg btn-accent w-full">Register</button>
+            </div>
+
+            {{ form_end(registrationForm) }}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in!{% endblock %}
+
+{% block body %}
+    <div class="hero min-h-screen">
+        <div class="min-w-[25%]">
+            <form method="post">
+                {% if error %}
+                    <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                {% endif %}
+
+                {% if app.user %}
+                    <div class="mb-3">
+                        You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+                    </div>
+                {% endif %}
+
+                <h1 class="text-4xl">Please sign in</h1>
+                <div class="flex flex-col gap-5 mt-5 mb-5">
+                    <div class="form-control">
+                        <label for="inputEmail">
+                            <input type="email"
+                                   value="{{ last_username }}"
+                                   placeholder="Email"
+                                   name="email" id="inputEmail"
+                                   class="input input-bordered input-primary w-full"
+                                   autocomplete="email"
+                                   required autofocus
+                            >
+                        </label>
+                    </div>
+                    <div class="form-control">
+                        <label for="inputPassword">
+                            <input type="password"
+                                   name="password"
+                                   placeholder="Password"
+                                   id="inputPassword"
+                                   class="input input-bordered input-primary w-full"
+                                   autocomplete="current-password"
+                                   required
+                            >
+                        </label>
+                    </div>
+                    <input type="hidden" name="_csrf_token"
+                           value="{{ csrf_token('authenticate') }}"
+                    >
+                </div>
+                <div class="flex flex-col">
+                    <button class="btn btn-lg btn-accent w-full" type="submit">
+                        Sign in
+                    </button>
+                    <a class="link mt-3" href="{{ path('app_register') }}">No account yet ?</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

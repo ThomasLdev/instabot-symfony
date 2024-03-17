@@ -46,7 +46,7 @@ class WaitDatabaseCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        for ($i = 0; $i < 60; $i += self::WAIT_SLEEP_TIME) {
+        for ($i = 0; 60 > $i; $i += self::WAIT_SLEEP_TIME) {
             try {
                 $connection = $this->em->getConnection();
                 $statement = $connection->prepare('SHOW TABLES');

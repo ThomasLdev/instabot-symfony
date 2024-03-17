@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Settings{% endblock %}
+
+{% block body %}
+    <div class="hero min-h-screen">
+        <div class="min-w-[25%]">
+            {{ form_start(settingsForm) }}
+
+            <h1 class="text-4xl">Update your settings</h1>
+
+            {{ form_errors(settingsForm) }}
+            <div class="flex flex-col gap-5 mt-5 mb-5">
+                <div class="form-control">
+                    <div class="mb-2">
+                        {{ form_label(settingsForm.googleDriveToken) }}
+                    </div>
+                    {{ form_widget(settingsForm.googleDriveToken, {'attr': {'class': 'input input-bordered input-primary w-full'}}) }}
+                </div>
+                <div class="form-control">
+                    <div class="mb-2">
+                        {{ form_label(settingsForm.googleDriveFolderId) }}
+                    </div>
+                    {{ form_widget(settingsForm.googleDriveFolderId, {'attr': {'class': 'input input-bordered input-primary w-full'}}) }}
+                </div>
+                <div class="form-control">
+                    <div class="mb-2">
+                        {{ form_label(settingsForm.instagramPostFrequency) }}
+                    </div>
+                    {{ form_widget(settingsForm.instagramPostFrequency, {'attr': {'class': 'input input-bordered input-primary w-full'}}) }}
+                    <small class="mt-2">
+                        Default is every day at 6pm. Format is
+                        <a href="http://www.cronmaker.com/?3"
+                           class="link"
+                           target="_blank">
+                            cron standard
+                        </a>
+                    </small>
+                </div>
+                <div class="form-control">
+                    <div class="mb-2">
+                        {{ form_label(settingsForm.instagramToken) }}
+                    </div>
+                    {{ form_widget(settingsForm.instagramToken, {'attr': {'class': 'input input-bordered input-primary w-full'}}) }}
+                </div>
+            </div>
+
+            <div class="flex flex-col">
+                <button type="submit" class="btn btn-lg btn-accent w-full">Update</button>
+            </div>
+            {{ form_end(settingsForm) }}
+        </div>
+    </div>
+{% endblock %}
