@@ -353,6 +353,16 @@ else
 	@make exec cmd="make eslint"
 endif
 
+pre-commit: ## Runs pre-commit checks
+ifeq ($(INSIDE_DOCKER_CONTAINER), 1)
+	@make phpunit
+	@make ecs-fix
+	@make phpcbf
+	@make phpstan
+	@make phpmd
+	@make eslint
+endif
+
 composer-normalize: ## Normalizes composer.json file content
 	@make exec cmd="composer normalize"
 

@@ -1,0 +1,9 @@
+form:
+    placeholders:
+        email: "Your email"
+        password: "Your password"
+        password_confirmation: "Confirm your password"
+    account:
+        create:
+            title: "Create your account"
+            send: "Register"

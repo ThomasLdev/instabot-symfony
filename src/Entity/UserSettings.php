@@ -19,16 +19,8 @@ class UserSettings
     #[ORM\Column(length: 255)]
     private ?string $googleDriveFolderId = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $instagramPostFrequency = null;
-
     #[ORM\Column(length: 255)]
     private ?string $instagramToken = null;
-
-    public function __construct()
-    {
-        $this->instagramPostFrequency = '0 0 18 1/1 * ? *'; // every day at 6pm
-    }
 
     public function getId(): ?int
     {
@@ -55,18 +47,6 @@ class UserSettings
     public function setGoogleDriveFolderId(string $googleDriveFolderId): static
     {
         $this->googleDriveFolderId = $googleDriveFolderId;
-
-        return $this;
-    }
-
-    public function getInstagramPostFrequency(): ?string
-    {
-        return $this->instagramPostFrequency;
-    }
-
-    public function setInstagramPostFrequency(?string $instagramPostFrequency): static
-    {
-        $this->instagramPostFrequency = $instagramPostFrequency;
 
         return $this;
     }
