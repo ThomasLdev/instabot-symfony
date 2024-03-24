@@ -10,7 +10,7 @@ services:
           BUILD_ARGUMENT_ENV: dev
         dockerfile: ./nginx/Dockerfile
       container_name: ${COMPOSE_PROJECT_NAME}-nginx
-      restart: always
+      restart: 'no'
       ports:
         - "${WEB_PORT_HTTP}:80"
         - "${WEB_PORT_SSL}:443"
@@ -33,6 +33,7 @@ services:
           XDEBUG_VERSION: ${XDEBUG_VERSION}
         dockerfile: ./Dockerfile
       container_name: ${COMPOSE_PROJECT_NAME}-symfony
+      restart: 'no'
       volumes:
         - ./:/var/www/html:cached
       depends_on:
@@ -45,6 +46,7 @@ services:
       image: mysql:${MYSQL_VERSION}
       platform: linux/x86_64
       container_name: ${COMPOSE_PROJECT_NAME}-mysql
+      restart: 'no'
       command: --innodb-use-native-aio=${INNODB_USE_NATIVE_AIO:-1} --sql_mode=${SQL_MODE:-"ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"}
       environment:
         MYSQL_USER: instabot
@@ -61,7 +63,7 @@ services:
     mail:
       image: axllent/mailpit:latest
       container_name: ${COMPOSE_PROJECT_NAME}-mail
-      restart: always
+      restart: 'no'
       ports:
         - "8025:8025"
         - "1025:1025"

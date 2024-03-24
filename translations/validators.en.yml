@@ -1,0 +1,8 @@
+form:
+    validation:
+        email:
+            required: "Please enter an email."
+            invalid: "This email is not valid."
+        password:
+            required: "Please enter a password."
+            invalid: "Your password must be at least 8 characters long"

@@ -18,8 +18,13 @@
                      or <a class="link" href="{{ path('app_register') }}">create an account</a></p>
             {% endif %}
 
-            {% if app.user and app.user.isVerified is same as false %}
-                <p class="py-6">You have an unconfirmed account. Please check your emails to activate it !</p>
+            {% if app.user %}
+                {% if app.user.isVerified is same as false %}
+                    <p class="py-6">You have an unconfirmed account. Please check your emails to activate it !</p>
+                {% else %}
+                    <p class="py-6">You are logged in as {{ app.user.email }}</p>
+                    <a href="{{ path('app_logout') }}" class="link">Logout</a>
+                {% endif %}
             {% endif %}
         </div>
     </div>
