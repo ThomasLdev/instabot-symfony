@@ -24,6 +24,8 @@
                 {% else %}
                     <p class="py-6">You are logged in as {{ app.user.email }}</p>
                     <a href="{{ path('app_logout') }}" class="link">Logout</a>
+
+                    {{ dump(files) }}
                 {% endif %}
             {% endif %}
         </div>
