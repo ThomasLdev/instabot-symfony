@@ -12,18 +12,22 @@ use App\Entity\UserSettings;
 use App\Service\Security\EncryptionService;
 use Doctrine\ORM\EntityManagerInterface;
 use Google\Client;
+use JsonException;
 use Random\RandomException;
+use RuntimeException;
+use SodiumException;
 
 class GoogleOAuthTokenService
 {
     public function __construct(
-        private readonly EncryptionService      $encryptionService,
+        private readonly EncryptionService $encryptionService,
         private readonly EntityManagerInterface $entityManager
-    ) { }
+    ) {
+    }
 
     /**
-     * @throws \JsonException
-     * @throws \SodiumException
+     * @throws JsonException
+     * @throws SodiumException
      * @throws RandomException
      */
     public function getToken(
@@ -31,8 +35,7 @@ class GoogleOAuthTokenService
         string $authCode,
         Client $client,
         UserSettings $userSettings
-    ): string
-    {
+    ): string {
         if ((null !== $accessToken) && $this->isTokenValid($userSettings)) {
             return $this->encryptionService->decrypt($accessToken);
         }
@@ -40,11 +43,11 @@ class GoogleOAuthTokenService
         $data = $client->fetchAccessTokenWithAuthCode($this->encryptionService->decrypt($authCode));
 
         if (array_key_exists('error', $data)) {
-            throw new \RuntimeException('Failed to get access token: ' . $data['error']);
+            throw new RuntimeException('Failed to get access token: ' . $data['error']);
         }
 
         if (false === array_key_exists('access_token', $data)) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'Failed to get access token from: ' .
                 json_encode($data, JSON_THROW_ON_ERROR)
             );
@@ -57,7 +60,7 @@ class GoogleOAuthTokenService
 
     /**
      * @throws RandomException
-     * @throws \SodiumException
+     * @throws SodiumException
      */
     private function refreshUserTokens(UserSettings $userSettings, array $data): void
     {

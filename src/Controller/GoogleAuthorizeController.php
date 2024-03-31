@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\UserSettings;
 use App\Service\Google\GoogleDriveClientService;
 use App\Service\Security\EncryptionService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -35,8 +36,11 @@ class GoogleAuthorizeController extends AbstractController
             return $this->redirectToRoute('app_index');
         }
 
+        /** @var UserSettings $settings */
+        $settings = $user->getSettings();
+
         try {
-            $client = $googleService->getClientForUser($user->getSettings());
+            $client = $googleService->getClientForUser($settings);
         } catch (NotFoundExceptionInterface | ContainerExceptionInterface | Exception $e) {
             $this->addFlash('error', 'An error occurred while trying to authorize Google Drive access.');
 
@@ -52,14 +56,13 @@ class GoogleAuthorizeController extends AbstractController
      */
     #[Route('/google/authorize-response', name: 'app_google_authorize_response')]
     public function response(
-        Request                $request,
-        EncryptionService      $tokenService,
+        Request $request,
+        EncryptionService $tokenService,
         EntityManagerInterface $entityManager
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $authCode = $request->query->get('code');
 
-        if (null === $authCode || '' === $authCode) {
+        if (false === is_string($authCode)) {
             $this->addFlash('error', 'No code provided in google response.');
 
             return $this->redirectToRoute('app_settings');
@@ -73,11 +76,10 @@ class GoogleAuthorizeController extends AbstractController
      * @throws SodiumException
      */
     private function storeAuthCodeForUser(
-        string                 $authCode,
-        EncryptionService      $tokenService,
+        string $authCode,
+        EncryptionService $tokenService,
         EntityManagerInterface $entityManager
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $user = $this->getUser();
 
         if (false === $user instanceof User) {
@@ -86,7 +88,10 @@ class GoogleAuthorizeController extends AbstractController
             return $this->redirectToRoute('app_index');
         }
 
-        $user->getSettings()->setGoogleDriveAuthCode($tokenService->encrypt($authCode));
+        /** @var UserSettings $settings */
+        $settings = $user->getSettings();
+
+        $settings->setGoogleDriveAuthCode($tokenService->encrypt($authCode));
 
         $this->addFlash('success', 'Google Drive access has been granted.');
 

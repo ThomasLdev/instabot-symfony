@@ -10,6 +10,7 @@ namespace App\Service\Security;
 
 use Exception;
 use Random\RandomException;
+use RuntimeException;
 use SodiumException;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
@@ -45,8 +46,8 @@ class EncryptionService
 
         $value = sodium_crypto_secretbox_open($encryptedValue, $nonce, $this->getSecretKey());
 
-        if ($value === false) {
-            throw new \RuntimeException('failed to decrypt value');
+        if (false === $value) {
+            throw new RuntimeException('failed to decrypt value');
         }
 
         return $value;
@@ -68,20 +69,21 @@ class EncryptionService
         $hexKey = $this->parameterBag->get('encryption_key');
 
         if (false === is_string($hexKey)) {
-            throw new \RuntimeException('encryption key must be a string');
+            throw new RuntimeException('encryption key must be a string');
         }
 
         // ensure the key is the correct length
         $hexKey = str_pad(
             $hexKey,
-            SODIUM_CRYPTO_SECRETBOX_KEYBYTES * 2, "0",
+            SODIUM_CRYPTO_SECRETBOX_KEYBYTES * 2,
+            '0',
             STR_PAD_LEFT
         );
 
         $binaryKey = sodium_hex2bin($hexKey);
 
-        if (strlen($binaryKey) !== SODIUM_CRYPTO_SECRETBOX_KEYBYTES) {
-            throw new \RuntimeException('encryption key must be ' . SODIUM_CRYPTO_SECRETBOX_KEYBYTES . ' bytes');
+        if (SODIUM_CRYPTO_SECRETBOX_KEYBYTES !== strlen($binaryKey)) {
+            throw new RuntimeException('encryption key must be ' . SODIUM_CRYPTO_SECRETBOX_KEYBYTES . ' bytes');
         }
 
         return $binaryKey;

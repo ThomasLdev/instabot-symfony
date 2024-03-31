@@ -36,7 +36,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private bool $isVerified = false;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(name: "settings_id", referencedColumnName: "id", onDelete: "SET NULL")]
+    #[ORM\JoinColumn(name: 'settings_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
     private ?UserSettings $settings;
 
     #[ORM\OneToMany(targetEntity: Task::class, mappedBy: 'user')]

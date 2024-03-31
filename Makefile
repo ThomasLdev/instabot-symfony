@@ -333,7 +333,7 @@ ifeq ($(INSIDE_DOCKER_CONTAINER), 1)
 	@echo "\033[32mRunning PHPStan - PHP Static Analysis Tool\033[39m"
 	@bin/console cache:clear --env=test
 	@./vendor/bin/phpstan --version
-	@./vendor/bin/phpstan analyze src tests
+	@./vendor/bin/phpstan analyze -c phpstan.neon
 else
 	@make exec cmd="make phpstan"
 endif
@@ -355,11 +355,18 @@ endif
 
 pre-commit: ## Runs pre-commit checks
 ifeq ($(INSIDE_DOCKER_CONTAINER), 1)
+	@echo "\033[32mRunning pre-commit checks\033[39m"
+	@echo "PHPUNIT"
 	@make phpunit
+	@echo "CSFIXER"
 	@make ecs-fix
+	@echo "PHPCBF"
 	@make phpcbf
+	@echo "PHPSTAN"
 	@make phpstan
+	@echo "PHPMD"
 	@make phpmd
+	@echo "ESLINT"
 	@make eslint
 endif
 

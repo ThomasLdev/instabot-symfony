@@ -27,7 +27,7 @@ class GoogleDriveClientService
     public function getFilesForUser(UserSettings $userSettings): ?FileList
     {
         $folderId = $userSettings->getGoogleDriveFolderId();
-        $hasBeenAuthorized = ($userSettings->getGoogleDriveAuthCode() !== null);
+        $hasBeenAuthorized = (null !== $userSettings->getGoogleDriveAuthCode());
 
         if (false === $hasBeenAuthorized) {
             throw new Exception('You did not authorize the app.');
@@ -40,17 +40,8 @@ class GoogleDriveClientService
         $service = new Drive($this->getClientForUser($userSettings));
 
         return $service->files->listFiles([
-            'q' => "'".$folderId."' in parents and trashed = false",
+            'q' => "'" . $folderId . "' in parents and trashed = false",
             'pageSize' => 50,
         ]);
-    }
-
-    private function handleResponse($response): ?FileList
-    {
-        if ($response instanceof FileList) {
-            return $response;
-        }
-
-        return null;
     }
 }

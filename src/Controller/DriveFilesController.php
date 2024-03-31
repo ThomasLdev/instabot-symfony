@@ -34,13 +34,20 @@ class DriveFilesController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
+        $settings = $user->getSettings();
+
+        if (null === $settings) {
+            $this->addFlash('error', 'You must provide your Google Drive folder ID in your settings.');
+
+            return $this->redirectToRoute('app_settings');
+        }
+
         try {
-            $files = $driveService->getFilesForUser($user->getSettings());
+            $files = $driveService->getFilesForUser($settings);
         } catch (Exception $e) {
             $this->addFlash('error', 'You did not provide any folder ID or did not authorize the app.');
 
             return $this->redirectToRoute('app_settings');
-
         }
 
         return $this->render('drive_files/index.html.twig', [

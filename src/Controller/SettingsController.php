@@ -12,6 +12,7 @@ use App\Entity\User;
 use App\Entity\UserSettings;
 use App\Form\UserSettingsType;
 use Doctrine\ORM\EntityManagerInterface;
+use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,8 +26,14 @@ class SettingsController extends AbstractController
         $form = $this->createForm(UserSettingsType::class, $this->getUserSettings());
         $form->handleRequest($request);
 
+        $userSettings = $form->getData();
+
+        if (false === $userSettings instanceof UserSettings) {
+            throw new RuntimeException('No user settings found.');
+        }
+
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->saveUserSettings($form->getData(), $entityManager);
+            $this->saveUserSettings($userSettings, $entityManager);
             $this->addFlash('success', 'Your settings have been saved.');
         }
 
