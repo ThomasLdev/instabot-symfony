@@ -1,0 +1,10 @@
+parameters:
+    level: 9
+    paths:
+        - src/
+        - tests/
+    treatPhpDocTypesAsCertain: false
+    checkGenericClassInNonGenericObjectType: false
+    ignoreErrors:
+        - '#has no value type specified in iterable type array#'
+        - '#with no value type specified in iterable type array#'
