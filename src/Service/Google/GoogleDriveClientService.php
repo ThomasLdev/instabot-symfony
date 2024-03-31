@@ -15,8 +15,10 @@ use Google\Service\Exception;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
-class GoogleDriveService extends BaseGoogleService
+class GoogleDriveClientService
 {
+    use GoogleClientTrait;
+
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
@@ -25,6 +27,11 @@ class GoogleDriveService extends BaseGoogleService
     public function getFilesForUser(UserSettings $userSettings): ?FileList
     {
         $folderId = $userSettings->getGoogleDriveFolderId();
+        $hasBeenAuthorized = ($userSettings->getGoogleDriveAuthCode() !== null);
+
+        if (false === $hasBeenAuthorized) {
+            throw new Exception('You did not authorize the app.');
+        }
 
         if (null === $folderId) {
             throw new Exception('No folder ID found for user.');

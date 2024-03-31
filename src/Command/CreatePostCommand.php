@@ -8,7 +8,9 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Service\Google\GoogleDriveService;
+use App\Entity\Task;
+use App\Entity\UserSettings;
+use App\Service\Google\GoogleDriveClientService;
 use Cron\CronExpression;
 use Doctrine\ORM\EntityManagerInterface;
 use Google\Service\Exception;
@@ -18,6 +20,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[AsCommand(
     name: 'app:create-post',
@@ -27,7 +30,7 @@ class CreatePostCommand extends Command
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly GoogleDriveService $googleDriveService
+        private readonly GoogleDriveClientService $googleDriveService
     ) {
         parent::__construct();
     }
@@ -42,14 +45,53 @@ class CreatePostCommand extends Command
         $output->writeln('Starting to create post...');
 
         // TODO 1 : Get all tasks by user
+        $tasks = $this->getTasks();
+
+        if (empty($tasks)) {
+            $output->writeln('No tasks found.');
+
+            return Command::SUCCESS;
+        }
+
         // TODO 2 : for each user task, check if it's due
-        // TODO 3 : if task is due, get files from google drive
+        foreach ($tasks as $task) {
+            if (false === $task->getUser() instanceof UserInterface) {
+                $this->entityManager->remove($task);
+            }
+
+            // TODO 3 : if task is due, run tasks
+            if ($this->isTaskDue($task)) {
+                $this->runTask($task);
+            }
+        }
+
         // TODO 4 : create post with files
         // TODO 5 : create TaskLog with responses
 
-        $files = $this->googleDriveService->getFiles();
-
         return Command::SUCCESS;
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws Exception
+     */
+    private function runTask(Task $task): void
+    {
+        // TODO 4 : get files from google drive user folder ID
+        $settings = $task->getUser()?->getSettings();
+
+        if (false === $settings instanceof UserSettings) {
+            return;
+        }
+
+        try {
+            $files = $this->googleDriveService->getFilesForUser($settings);
+        } catch (Exception $e) {
+            // TODO 5 : create TaskLog with error
+        }
+
+
     }
 
     private function getTasks(): array
@@ -59,8 +101,6 @@ class CreatePostCommand extends Command
 
     private function isTaskDue(Task $task): bool
     {
-        $cronExpression = new CronExpression($task->getCronExpression());
-
-        return $cronExpression->isDue();
+        return (new CronExpression($task->getCronExpression()))->isDue();
     }
 }

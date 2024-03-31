@@ -13,7 +13,7 @@ use Random\RandomException;
 use SodiumException;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
-class TokenService
+class EncryptionService
 {
     public function __construct(
         private readonly ParameterBagInterface $parameterBag
@@ -25,31 +25,31 @@ class TokenService
      * @throws SodiumException
      * @throws Exception
      */
-    public function encrypt(string $authCode): string
+    public function encrypt(string $value): string
     {
         $nonce = $this->getNonce();
-        $encryptedCode = sodium_crypto_secretbox($authCode, $nonce, $this->getSecretKey());
+        $encryptedValue = sodium_crypto_secretbox($value, $nonce, $this->getSecretKey());
 
-        return base64_encode($nonce . $encryptedCode);
+        return base64_encode($nonce . $encryptedValue);
     }
 
     /**
      * @throws SodiumException
      * @throws Exception
      */
-    public function decrypt(string $encryptedAuthCodeWithNonce): string
+    public function decrypt(string $encryptedValueWithNonce): string
     {
-        $decoded = base64_decode($encryptedAuthCodeWithNonce);
-        $nonce = substr($decoded, 0, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
-        $encryptedCode = substr($decoded, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
+        $decodedValue = base64_decode($encryptedValueWithNonce);
+        $nonce = substr($decodedValue, 0, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
+        $encryptedValue = substr($decodedValue, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
 
-        $token = sodium_crypto_secretbox_open($encryptedCode, $nonce, $this->getSecretKey());
+        $value = sodium_crypto_secretbox_open($encryptedValue, $nonce, $this->getSecretKey());
 
-        if ($token === false) {
-            throw new \RuntimeException('failed to decrypt data');
+        if ($value === false) {
+            throw new \RuntimeException('failed to decrypt value');
         }
 
-        return $token;
+        return $value;
     }
 
     /**

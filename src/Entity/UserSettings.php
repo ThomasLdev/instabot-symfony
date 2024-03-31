@@ -28,6 +28,9 @@ class UserSettings
     #[ORM\Column(nullable: true)]
     private ?int $googleDriveTokenExpiry = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $googleDriveTokenIssueTime = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -89,6 +92,18 @@ class UserSettings
     public function setGoogleDriveTokenExpiry(?int $googleDriveTokenExpiry): static
     {
         $this->googleDriveTokenExpiry = $googleDriveTokenExpiry;
+
+        return $this;
+    }
+
+    public function getGoogleDriveTokenIssueTime(): ?int
+    {
+        return $this->googleDriveTokenIssueTime;
+    }
+
+    public function setGoogleDriveTokenIssueTime(?int $googleDriveTokenIssueTime): static
+    {
+        $this->googleDriveTokenIssueTime = $googleDriveTokenIssueTime;
 
         return $this;
     }

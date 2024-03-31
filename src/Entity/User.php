@@ -37,7 +37,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: "settings_id", referencedColumnName: "id", onDelete: "SET NULL")]
-    private UserSettings $settings;
+    private ?UserSettings $settings;
 
     #[ORM\OneToMany(targetEntity: Task::class, mappedBy: 'user')]
     private Collection $tasks;
@@ -133,12 +133,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getSettings(): UserSettings
+    public function getSettings(): ?UserSettings
     {
         return $this->settings;
     }
 
-    public function setSettings(UserSettings $settings): static
+    public function setSettings(?UserSettings $settings): static
     {
         $this->settings = $settings;
 

@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Service\Google\GoogleDriveService;
+use App\Service\Google\GoogleDriveClientService;
 use Google\Service\Exception;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -24,7 +24,7 @@ class DriveFilesController extends AbstractController
      * @throws NotFoundExceptionInterface
      */
     #[Route('/drive/files', name: 'app_drive_files')]
-    public function index(GoogleDriveService $driveService): Response
+    public function index(GoogleDriveClientService $driveService): Response
     {
         $user = $this->getUser();
 
@@ -37,7 +37,7 @@ class DriveFilesController extends AbstractController
         try {
             $files = $driveService->getFilesForUser($user->getSettings());
         } catch (Exception $e) {
-            $this->addFlash('error', 'You did not provide any folder ID. Please update your settings.');
+            $this->addFlash('error', 'You did not provide any folder ID or did not authorize the app.');
 
             return $this->redirectToRoute('app_settings');
 

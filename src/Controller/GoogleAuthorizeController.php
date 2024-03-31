@@ -9,8 +9,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Service\Google\GoogleDriveService;
-use App\Service\Security\TokenService;
+use App\Service\Google\GoogleDriveClientService;
+use App\Service\Security\EncryptionService;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Psr\Container\ContainerExceptionInterface;
@@ -25,7 +25,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class GoogleAuthorizeController extends AbstractController
 {
     #[Route('/google/authorize-request', name: 'app_google_authorize_request')]
-    public function index(GoogleDriveService $googleService): RedirectResponse
+    public function index(GoogleDriveClientService $googleService): RedirectResponse
     {
         $user = $this->getUser();
 
@@ -52,8 +52,8 @@ class GoogleAuthorizeController extends AbstractController
      */
     #[Route('/google/authorize-response', name: 'app_google_authorize_response')]
     public function response(
-        Request $request,
-        TokenService $tokenService,
+        Request                $request,
+        EncryptionService      $tokenService,
         EntityManagerInterface $entityManager
     ): RedirectResponse
     {
@@ -73,8 +73,8 @@ class GoogleAuthorizeController extends AbstractController
      * @throws SodiumException
      */
     private function storeAuthCodeForUser(
-        string $authCode,
-        TokenService $tokenService,
+        string                 $authCode,
+        EncryptionService      $tokenService,
         EntityManagerInterface $entityManager
     ): RedirectResponse
     {
