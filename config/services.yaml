@@ -7,6 +7,7 @@ parameters:
     google_recaptcha_site_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
     google_api_key: '%env(GOOGLE_API_KEY)%'
     google_client_id: '%env(GOOGLE_CLIENT_ID)%'
+    google_client_secret: '%env(GOOGLE_CLIENT_SECRET)%'
     encryption_key: '%env(ENCRYPTION_KEY)%'
 
 services:

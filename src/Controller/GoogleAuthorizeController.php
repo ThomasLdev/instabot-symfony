@@ -12,7 +12,6 @@ use App\Entity\User;
 use App\Service\Google\GoogleDriveService;
 use App\Service\Security\TokenService;
 use Doctrine\ORM\EntityManagerInterface;
-use Google\Exception;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Random\RandomException;
@@ -29,7 +28,7 @@ class GoogleAuthorizeController extends AbstractController
     {
         try {
             $client = $googleService->getClient();
-        } catch (Exception|NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+        } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
             $this->addFlash('error', 'An error occurred while trying to authorize Google Drive access.');
 
             return $this->redirectToRoute('app_settings');
@@ -78,7 +77,7 @@ class GoogleAuthorizeController extends AbstractController
             return $this->redirectToRoute('app_settings');
         }
 
-        $user->getSettings()->setGoogleDriveToken($tokenService->encrypt($code));
+        $user->getSettings()?->setGoogleDriveToken($tokenService->encrypt($code));
 
         $this->addFlash('success', 'Google Drive access has been given.');
 

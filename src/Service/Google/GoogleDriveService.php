@@ -13,27 +13,22 @@ use Google\Service\Drive\FileList;
 use Google\Service\Exception;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
-use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
-use Symfony\Component\Filesystem\Filesystem;
 
 class GoogleDriveService extends BaseGoogleService
 {
-    public function __construct(
-        ContainerBagInterface $params,
-        Filesystem $filesystem
-    ) {
-        parent::__construct($params, $filesystem);
-    }
-
     /**
      * @throws NotFoundExceptionInterface
      * @throws Exception
      * @throws \Google\Exception
      * @throws ContainerExceptionInterface
      */
-    public function getFilesForUser(): ?FileList
+    public function getFilesForUser(?string $token): ?FileList
     {
-        $service = new Drive($this->getClient());
+        if (null === $token) {
+            return null;
+        }
+
+        $service = new Drive($this->getClient($token));
 
         return $service->files->listFiles();
     }
