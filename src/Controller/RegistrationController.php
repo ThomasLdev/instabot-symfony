@@ -38,12 +38,20 @@ class RegistrationController extends AbstractController
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
+        $password = $form->get('plainPassword')->getData();
+
+        if (false === is_string($password)) {
+            $this->addFlash('error', 'You must provide a password.');
+
+            return $this->redirectToRoute('app_register');
+        }
+
         if ($form->isSubmitted() && $form->isValid()) {
             // encode the plain password
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
                     $user,
-                    $form->get('plainPassword')->getData()
+                    $password
                 )
             );
 

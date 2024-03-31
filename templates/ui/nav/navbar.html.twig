@@ -1,12 +1,15 @@
 {% set userIconClass = app.user ? 'fa-solid' : 'fa-regular' %}
 
-<div class="btm-nav">
-    <a href="{{ path('app_index') }}" class="text-primary active">
-        <i class="fa-solid fa-house"></i>
-    </a>
-    {% if app.user and app.user.isVerified is same as true %}
+{% if app.user and app.user.isVerified is same as true %}
+    <div class="btm-nav">
+        <a href="{{ path('app_index') }}" class="text-primary active">
+            <i class="fa-solid fa-house"></i>
+        </a>
+        <a href="{{ path('app_drive_files') }}" class="text-primary">
+            <i class="fa-solid fa-file"></i>
+        </a>
         <a href="{{ path('app_settings') }}" class="text-primary">
             <i class="fa-solid fa-gears"></i>
         </a>
-    {% endif %}
-</div>
+    </div>
+{% endif %}

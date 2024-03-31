@@ -1,4 +1,6 @@
 form:
+    update:
+        label: "Update settings"
     placeholders:
         email: "Your email"
         password: "Your password"
@@ -7,3 +9,11 @@ form:
         create:
             title: "Create your account"
             send: "Register"
+    label:
+        drive:
+            token: "Google Drive token"
+            folder_id: "Google Drive folder ID"
+        instagram_token: "Instagram token"
+page:
+    userSettings:
+        title: "Update your settings"
