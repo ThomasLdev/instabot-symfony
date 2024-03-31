@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-theme="dark" lang="en">
+<html data-theme="dark" lang="en" class="bg-base-200">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -13,7 +13,7 @@
             {{ encore_entry_script_tags('app') }}
         {% endblock %}
     </head>
-    <body class="bg-base-200">
+    <body>
         {% include 'ui/notification/flash-messages.html.twig' %}
         {% include 'ui/nav/navbar.html.twig' %}
         {% block body %}{% endblock %}

@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace App\Service\Google;
 
+use App\Entity\UserSettings;
 use Google\Service\Drive;
 use Google\Service\Drive\FileList;
 use Google\Service\Exception;
@@ -17,19 +18,32 @@ use Psr\Container\NotFoundExceptionInterface;
 class GoogleDriveService extends BaseGoogleService
 {
     /**
+     * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      * @throws Exception
-     * @throws \Google\Exception
-     * @throws ContainerExceptionInterface
      */
-    public function getFilesForUser(?string $token): ?FileList
+    public function getFilesForUser(UserSettings $userSettings): ?FileList
     {
-        if (null === $token) {
-            return null;
+        $folderId = $userSettings->getGoogleDriveFolderId();
+
+        if (null === $folderId) {
+            throw new Exception('No folder ID found for user.');
         }
 
-        $service = new Drive($this->getClient($token));
+        $service = new Drive($this->getClientForUser($userSettings));
 
-        return $service->files->listFiles();
+        return $service->files->listFiles([
+            'q' => "'".$folderId."' in parents and trashed = false",
+            'pageSize' => 50,
+        ]);
+    }
+
+    private function handleResponse($response): ?FileList
+    {
+        if ($response instanceof FileList) {
+            return $response;
+        }
+
+        return null;
     }
 }

@@ -12,6 +12,7 @@ use App\Entity\User;
 use App\Service\Google\GoogleDriveService;
 use App\Service\Security\TokenService;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Random\RandomException;
@@ -26,9 +27,17 @@ class GoogleAuthorizeController extends AbstractController
     #[Route('/google/authorize-request', name: 'app_google_authorize_request')]
     public function index(GoogleDriveService $googleService): RedirectResponse
     {
+        $user = $this->getUser();
+
+        if (false === $user instanceof User) {
+            $this->addFlash('error', 'You must be logged in to authorize Google Drive access.');
+
+            return $this->redirectToRoute('app_index');
+        }
+
         try {
-            $client = $googleService->getClient();
-        } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+            $client = $googleService->getClientForUser($user->getSettings());
+        } catch (NotFoundExceptionInterface | ContainerExceptionInterface | Exception $e) {
             $this->addFlash('error', 'An error occurred while trying to authorize Google Drive access.');
 
             return $this->redirectToRoute('app_settings');
@@ -48,23 +57,23 @@ class GoogleAuthorizeController extends AbstractController
         EntityManagerInterface $entityManager
     ): RedirectResponse
     {
-        $code = $request->query->get('code');
+        $authCode = $request->query->get('code');
 
-        if (null === $code || '' === $code) {
+        if (null === $authCode || '' === $authCode) {
             $this->addFlash('error', 'No code provided in google response.');
 
             return $this->redirectToRoute('app_settings');
         }
 
-        return $this->storeTokenForUser($code, $tokenService, $entityManager);
+        return $this->storeAuthCodeForUser($authCode, $tokenService, $entityManager);
     }
 
     /**
      * @throws RandomException
      * @throws SodiumException
      */
-    private function storeTokenForUser(
-        string $code,
+    private function storeAuthCodeForUser(
+        string $authCode,
         TokenService $tokenService,
         EntityManagerInterface $entityManager
     ): RedirectResponse
@@ -74,12 +83,12 @@ class GoogleAuthorizeController extends AbstractController
         if (false === $user instanceof User) {
             $this->addFlash('error', 'You must be logged in to authorize Google Drive access.');
 
-            return $this->redirectToRoute('app_settings');
+            return $this->redirectToRoute('app_index');
         }
 
-        $user->getSettings()?->setGoogleDriveToken($tokenService->encrypt($code));
+        $user->getSettings()->setGoogleDriveAuthCode($tokenService->encrypt($authCode));
 
-        $this->addFlash('success', 'Google Drive access has been given.');
+        $this->addFlash('success', 'Google Drive access has been granted.');
 
         $entityManager->flush();
 

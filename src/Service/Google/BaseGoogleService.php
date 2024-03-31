@@ -8,6 +8,10 @@ declare(strict_types=1);
 
 namespace App\Service\Google;
 
+use App\Entity\UserSettings;
+use App\Service\Security\TokenService;
+use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Google\Client;
 use Google\Service\Drive;
 use Psr\Container\ContainerExceptionInterface;
@@ -22,58 +26,84 @@ abstract class BaseGoogleService
     private const GOOGLE_APP_NAME = 'Instabot';
 
     public function __construct(
-        private readonly ContainerBagInterface $params
+        private readonly ContainerBagInterface $params,
+        private readonly TokenService $tokenService,
+        private readonly EntityManagerInterface $entityManager
     ) {
     }
 
+
     /**
-     * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws Exception
      */
-    public function getClient(?string $token = null): Client
+    public function getClientForUser(UserSettings $userSettings): Client
     {
         $client = new Client();
 
+        $this->setClientBaseData($client);
+
+        $authCode = $userSettings->getGoogleDriveAuthCode();
+        $accessToken = $userSettings->getGoogleDriveToken();
+
+        if (!$accessToken && !$authCode) {
+            return $client;
+        }
+
+        $client->setAccessToken($this->getAccessToken($accessToken, $authCode, $client, $userSettings));
+
+        return $client;
+    }
+
+    /**
+     * @throws NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     */
+    private function setClientBaseData(Client $client): void
+    {
         $client->setApplicationName(self::GOOGLE_APP_NAME);
         $client->setDeveloperKey($this->params->get(self::GOOGLE_API_KEY));
         $client->setClientId($this->params->get(self::GOOGLE_CLIENT_ID));
         $client->setClientSecret($this->params->get(self::GOOGLE_CLIENT_SECRET));
         $client->setRedirectUri('https://' . $_SERVER['HTTP_HOST'] . '/google/authorize-response');
         $client->addScope(Drive::DRIVE);
-
-        if (null === $token) {
-            return $client;
-        }
-
-        $accessToken = $client->fetchAccessTokenWithAuthCode($token);
-        $client->setAccessToken($accessToken);
-
-        return $client;
     }
 
-//    /**
-//     * @throws Exception
-//     */
-//    public function getAuthConfigAsJson(Client $client, string $token): string
-//    {
-//        $tempFile = tempnam(sys_get_temp_dir(), 'google_oauth');
-//
-//        if (false === $tempFile) {
-//            throw new Exception('Failed to create temporary file');
-//        }
-//
-//        $fileContent = json_encode($token);
-//
-//        if (false === $fileContent) {
-//            throw new Exception('Failed to encode token to JSON');
-//        }
-//
-//        file_put_contents($tempFile, $fileContent);
-//
-//        if (false === ) {
-//            throw new Exception('Failed to set auth config');
-//        }
-//
-//        return $tempFile;
-//    }
+    /**
+     * @throws Exception
+     */
+    private function getAccessToken(
+        ?string $accessToken,
+        string $authCode,
+        Client $client,
+        UserSettings $userSettings
+    ): string
+    {
+        if (null !== $accessToken) {
+            return $this->tokenService->decrypt($accessToken);
+        }
+
+        $data = $client->fetchAccessTokenWithAuthCode($this->tokenService->decrypt($authCode));
+
+        if (array_key_exists('error', $data)) {
+            throw new \RuntimeException('Failed to get access token: ' . $data['error']);
+        }
+
+        if (false === array_key_exists('access_token', $data)) {
+            throw new \RuntimeException(
+                'Failed to get access token from: ' .
+                json_encode($data, JSON_THROW_ON_ERROR)
+            );
+        }
+
+        $accessToken = $data['access_token'];
+
+        $userSettings->setGoogleDriveToken($this->tokenService->encrypt($accessToken));
+        $userSettings->setGoogleDriveTokenExpiry($data['expires_in']);
+
+        $this->entityManager->flush();
+
+        return $accessToken;
+    }
 }

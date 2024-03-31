@@ -36,7 +36,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private bool $isVerified = false;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?UserSettings $settings = null;
+    #[ORM\JoinColumn(name: "settings_id", referencedColumnName: "id", onDelete: "SET NULL")]
+    private UserSettings $settings;
 
     #[ORM\OneToMany(targetEntity: Task::class, mappedBy: 'user')]
     private Collection $tasks;
@@ -44,6 +45,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->tasks = new ArrayCollection();
+        $this->settings = new UserSettings();
     }
 
     public function getId(): ?int
@@ -131,12 +133,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getSettings(): ?UserSettings
+    public function getSettings(): UserSettings
     {
         return $this->settings;
     }
 
-    public function setSettings(?UserSettings $settings): static
+    public function setSettings(UserSettings $settings): static
     {
         $this->settings = $settings;
 
