@@ -17,3 +17,12 @@ form:
 page:
     userSettings:
         title: "Update your settings"
+errors:
+    controller:
+        user:
+            not_logged: 'You must be logged in to access your Google Drive files'
+            no_settings: 'You must provide your Google Drive folder ID in your settings'
+    drive:
+        no_auth: 'You have not authorized Google Drive access in your settings'
+        no_folder: 'You must provide your Google Drive folder ID in your settings'
+        general: 'There was an error getting the files from Google Drive. Please contact an administrator'

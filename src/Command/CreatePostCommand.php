@@ -8,11 +8,6 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Entity\Task;
-use App\Entity\UserSettings;
-use App\Service\Google\GoogleDriveClientService;
-use Cron\CronExpression;
-use Doctrine\ORM\EntityManagerInterface;
 use Google\Service\Exception;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -20,7 +15,6 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 #[AsCommand(
     name: 'app:create-post',

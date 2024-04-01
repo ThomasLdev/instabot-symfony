@@ -9,6 +9,8 @@ declare(strict_types=1);
 namespace App\Service\Google;
 
 use App\Entity\UserSettings;
+use App\Service\Google\OAuth\GoogleOAuthTokenService;
+use App\Service\Security\EncryptionService;
 use Exception;
 use Google\Client;
 use Google\Service\Drive;
@@ -17,16 +19,17 @@ use Psr\Container\NotFoundExceptionInterface;
 use RuntimeException;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 
-trait GoogleClientTrait
+class GoogleClientService
 {
-    private const GOOGLE_API_KEY = 'google_api_key';
-    private const GOOGLE_CLIENT_ID = 'google_client_id';
-    private const GOOGLE_CLIENT_SECRET = 'google_client_secret';
-    private const GOOGLE_APP_NAME = 'Instabot';
+    public const GOOGLE_API_KEY = 'google_api_key';
+    public const GOOGLE_CLIENT_ID = 'google_client_id';
+    public const GOOGLE_CLIENT_SECRET = 'google_client_secret';
+    public const GOOGLE_APP_NAME = 'Instabot';
 
     public function __construct(
-        private readonly ContainerBagInterface $params,
-        private readonly GoogleOAuthTokenService $tokenService
+        private readonly ContainerBagInterface $containerBag,
+        private readonly GoogleOAuthTokenService $OAuthService,
+        private readonly EncryptionService $encryptionService
     ) {
     }
 
@@ -49,7 +52,13 @@ trait GoogleClientTrait
         }
 
         /** @var string $authCode */
-        $client->setAccessToken($this->tokenService->getToken($accessToken, $authCode, $client, $userSettings));
+        $response = $this->OAuthService->getToken($accessToken, $authCode, $client, $userSettings);
+
+        if (false === $response->getSuccess() || '' === $response->getAccessToken()) {
+            return $client;
+        }
+
+        $client->setAccessToken($this->encryptionService->decrypt($response->getAccessToken()));
 
         return $client;
     }
@@ -77,18 +86,18 @@ trait GoogleClientTrait
      */
     private function getRequiredParameters(): array
     {
-        $params = [
-            self::GOOGLE_API_KEY => $this->params->get(self::GOOGLE_API_KEY),
-            self::GOOGLE_CLIENT_ID => $this->params->get(self::GOOGLE_CLIENT_ID),
-            self::GOOGLE_CLIENT_SECRET => $this->params->get(self::GOOGLE_CLIENT_SECRET),
+        $envParams = [
+            self::GOOGLE_API_KEY => $this->containerBag->get(self::GOOGLE_API_KEY),
+            self::GOOGLE_CLIENT_ID => $this->containerBag->get(self::GOOGLE_CLIENT_ID),
+            self::GOOGLE_CLIENT_SECRET => $this->containerBag->get(self::GOOGLE_CLIENT_SECRET),
         ];
 
-        foreach ($params as $param) {
+        foreach ($envParams as $param) {
             if (false === is_string($param)) {
                 throw new RuntimeException('Google API parameters must be strings.');
             }
         }
 
-        return $params;
+        return $envParams;
     }
 }
