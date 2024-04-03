@@ -38,16 +38,21 @@ class EncryptionService
      * @throws SodiumException
      * @throws Exception
      */
-    public function decrypt(string $encryptedValueWithNonce): string
+    public function decrypt(string $encryptedValueWithNonce): ?string
     {
         $decodedValue = base64_decode($encryptedValueWithNonce);
         $nonce = substr($decodedValue, 0, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
+
+        if (SODIUM_CRYPTO_SECRETBOX_NONCEBYTES !== strlen($nonce)) {
+            return null;
+        }
+
         $encryptedValue = substr($decodedValue, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
 
         $value = sodium_crypto_secretbox_open($encryptedValue, $nonce, $this->getSecretKey());
 
         if (false === $value) {
-            throw new RuntimeException('failed to decrypt value');
+            return null;
         }
 
         return $value;

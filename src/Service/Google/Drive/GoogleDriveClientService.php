@@ -19,20 +19,23 @@ use Psr\Container\NotFoundExceptionInterface;
 class GoogleDriveClientService
 {
     public function __construct(
-        private readonly GoogleClientService $clientService,
+        private readonly GoogleClientService        $clientService,
         private readonly GoogleDriveResponseService $responseService
-    ) {
+    )
+    {
     }
 
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * @throws Exception
      */
     public function getFilesForUser(UserSettings $userSettings): GoogleDriveResponse
     {
         $folderId = $userSettings->getGoogleDriveFolderId();
-        $hasBeenAuthorized = (null !== $userSettings->getGoogleDriveAuthCode());
+        $authCode = $userSettings->getGoogleDriveAuthCode();
+
+        // if no token, it can be refreshed, but the authCode is mandatory.
+        $hasBeenAuthorized = ('' !== $authCode && null !== $authCode);
 
         if (false === $hasBeenAuthorized) {
             return $this->responseService->handleResponse([
@@ -40,32 +43,55 @@ class GoogleDriveClientService
             ]);
         }
 
-        if (null === $folderId) {
+        if ('' === $folderId || null === $folderId) {
             return $this->responseService->handleResponse([
                 'error' => 'errors.drive.no_folder',
             ]);
         }
 
+        $files = $this->getFiles($userSettings, $folderId);
+
+        if (true === array_key_exists('error', $files)) {
+            return $this->responseService->handleResponse([
+                'error' => 'errors.drive.bad_request',
+            ]);
+        }
+
         return $this->responseService->handleResponse([
-            'files' => $this->getFiles($userSettings, $folderId),
+            'files' => $files,
         ]);
     }
 
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * @throws Exception
      */
     private function getFiles(UserSettings $userSettings, string $folderId): array
     {
-        return (new Drive($this->clientService->getClientForUser($userSettings)))
-            ->files->listFiles($this->getQueryParameters($folderId))->getFiles();
+        try {
+            $client = $this->clientService->getClientForUser($userSettings);
+
+            if (null === $client) {
+                return [
+                    'error' => 'errors.drive.no_client',
+                ];
+            }
+
+            $files = (new Drive($client))->files->listFiles($this->getQueryParameters($folderId))->getFiles();
+        } catch (Exception $e) {
+            return [
+                'error' => 'errors.drive.general',
+                'code' => $e->getCode(),
+            ];
+        }
+
+        return $files;
     }
 
     private function getQueryParameters(string $folderId): array
     {
         return [
-            'q' => "'" . $folderId . "' in parents and trashed = false",
+            'q' => "'".$folderId."' in parents and trashed = false",
         ];
     }
 }

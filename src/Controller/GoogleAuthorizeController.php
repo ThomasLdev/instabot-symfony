@@ -31,7 +31,7 @@ class GoogleAuthorizeController extends AbstractController
         $user = $this->getUser();
 
         if (false === $user instanceof User) {
-            $this->addFlash('error', 'You must be logged in to authorize Google Drive access.');
+            $this->addFlash('error', 'errors.controller.user.not_logged');
 
             return $this->redirectToRoute('app_index');
         }
@@ -42,7 +42,13 @@ class GoogleAuthorizeController extends AbstractController
         try {
             $client = $clientService->getClientForUser($settings);
         } catch (NotFoundExceptionInterface | ContainerExceptionInterface | Exception $e) {
-            $this->addFlash('error', 'An error occurred while trying to authorize Google Drive access.');
+            $this->addFlash('error', 'errors.controller.google.authorization_failed');
+
+            return $this->redirectToRoute('app_settings');
+        }
+
+        if (null === $client) {
+            $this->addFlash('error', 'errors.controller.google.authorization_failed');
 
             return $this->redirectToRoute('app_settings');
         }
@@ -63,7 +69,7 @@ class GoogleAuthorizeController extends AbstractController
         $authCode = $request->query->get('code');
 
         if (false === is_string($authCode)) {
-            $this->addFlash('error', 'No code provided in google response.');
+            $this->addFlash('error', 'errors.controller.google.no_code');
 
             return $this->redirectToRoute('app_settings');
         }
@@ -77,7 +83,7 @@ class GoogleAuthorizeController extends AbstractController
         $user = $this->getUser();
 
         if (false === $user instanceof User) {
-            $this->addFlash('error', 'You must be logged in to revoke Google Drive access.');
+            $this->addFlash('error', 'errors.controller.user.not_logged');
 
             return $this->redirectToRoute('app_index');
         }
@@ -86,8 +92,9 @@ class GoogleAuthorizeController extends AbstractController
         $settings = $user->getSettings();
 
         $settings->setGoogleDriveAuthCode(null);
+        $settings->setGoogleDriveToken(null);
 
-        $this->addFlash('success', 'Google Drive access has been revoked.');
+        $this->addFlash('success', 'form.update.token.revoke');
 
         $entityManager->flush();
 
@@ -106,7 +113,7 @@ class GoogleAuthorizeController extends AbstractController
         $user = $this->getUser();
 
         if (false === $user instanceof User) {
-            $this->addFlash('error', 'You must be logged in to authorize Google Drive access.');
+            $this->addFlash('error', 'errors.controller.user.not_logged');
 
             return $this->redirectToRoute('app_index');
         }
@@ -116,7 +123,7 @@ class GoogleAuthorizeController extends AbstractController
 
         $settings->setGoogleDriveAuthCode($tokenService->encrypt($authCode));
 
-        $this->addFlash('success', 'Google Drive access has been granted.');
+        $this->addFlash('success', 'form.update.token.granted');
 
         $entityManager->flush();
 
