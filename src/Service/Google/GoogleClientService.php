@@ -38,7 +38,7 @@ class GoogleClientService
      * @throws ContainerExceptionInterface
      * @throws Exception
      */
-    public function getClientForUser(UserSettings $userSettings): Client
+    public function getClientForUser(UserSettings $userSettings): ?Client
     {
         $client = new Client();
 
@@ -58,7 +58,13 @@ class GoogleClientService
             return $client;
         }
 
-        $client->setAccessToken($this->encryptionService->decrypt($response->getAccessToken()));
+        $token = $this->encryptionService->decrypt($response->getAccessToken());
+
+        if (null === $token) {
+            return null;
+        }
+
+        $client->setAccessToken($token);
 
         return $client;
     }

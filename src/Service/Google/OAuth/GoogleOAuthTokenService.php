@@ -43,7 +43,15 @@ class GoogleOAuthTokenService
             ]);
         }
 
-        $data = $client->fetchAccessTokenWithAuthCode($this->encryptionService->decrypt($authCode));
+        $token = $this->encryptionService->decrypt($authCode);
+
+        if (null === $token) {
+            return $this->OAuthResponse->handleResponse([
+                'error' => 'errors.oauth.bad_token',
+            ]);
+        }
+
+        $data = $client->fetchAccessTokenWithAuthCode($token);
         $response = $this->OAuthResponse->handleResponse($data);
 
         if (false === $response->getSuccess()) {
