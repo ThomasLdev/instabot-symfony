@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace App\Service\Google;
 
 use App\Entity\UserSettings;
-use App\Model\GoogleClientResponse;
 use App\Service\Google\OAuth\GoogleOAuthTokenService;
 use App\Service\Security\EncryptionService;
 use Exception;
@@ -73,6 +72,7 @@ class GoogleClientService
     {
         $params = $this->getRequiredParameters();
 
+        // TODO : try without settings env params here but use the yaml conf
         $client->setApplicationName(self::GOOGLE_APP_NAME);
         $client->setDeveloperKey($params[self::GOOGLE_API_KEY]);
         $client->setClientId($params[self::GOOGLE_CLIENT_ID]);

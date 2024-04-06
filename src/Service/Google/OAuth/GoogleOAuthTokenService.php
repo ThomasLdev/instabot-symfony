@@ -40,12 +40,12 @@ class GoogleOAuthTokenService
         $userSettings->setGoogleDriveAuthCode($this->encryptionService->encrypt($authCode));
 
         try {
-            $this->getAccessToken($userSettings);
+            $authResponse = $this->getAccessToken($userSettings);
         } catch (NotFoundExceptionInterface|ContainerExceptionInterface|RandomException|SodiumException $e) {
             return $this->OAuthResponse->handleResponse([]);
         }
 
-        return $this->OAuthResponse->handleResponse([]);
+        return $authResponse;
     }
 
     /**
@@ -83,41 +83,41 @@ class GoogleOAuthTokenService
         return $response;
     }
 
-    /**
-     * @throws SodiumException
-     * @throws RandomException
-     */
-    public function getToken(
-        ?string $accessToken,
-        string $authCode,
-        Client $client,
-        UserSettings $userSettings
-    ): GoogleClientResponse {
-        if ((null !== $accessToken) && $this->tokenHelper->isValid($userSettings)) {
-            return $this->OAuthResponse->handleResponse([
-                'access_token' => $accessToken,
-            ]);
-        }
-
-        $token = $this->encryptionService->decrypt($authCode);
-
-        if (null === $token) {
-            return $this->OAuthResponse->handleResponse([
-                'error' => 'errors.oauth.bad_token',
-            ]);
-        }
-
-        $data = $client->fetchAccessTokenWithAuthCode($token);
-        $response = $this->OAuthResponse->handleResponse($data);
-
-        if (false === $response->getSuccess()) {
-            return $response;
-        }
-
-        $this->refreshUserTokens($userSettings, $data);
-
-        return $response;
-    }
+//    /**
+//     * @throws SodiumException
+//     * @throws RandomException
+//     */
+//    public function getToken(
+//        ?string $accessToken,
+//        string $authCode,
+//        Client $client,
+//        UserSettings $userSettings
+//    ): GoogleClientResponse {
+//        if ((null !== $accessToken) && $this->tokenHelper->isValid($userSettings)) {
+//            return $this->OAuthResponse->handleResponse([
+//                'access_token' => $accessToken,
+//            ]);
+//        }
+//
+//        $token = $this->encryptionService->decrypt($authCode);
+//
+//        if (null === $token) {
+//            return $this->OAuthResponse->handleResponse([
+//                'error' => 'errors.oauth.bad_token',
+//            ]);
+//        }
+//
+//        $data = $client->fetchAccessTokenWithAuthCode($token);
+//        $response = $this->OAuthResponse->handleResponse($data);
+//
+//        if (false === $response->getSuccess()) {
+//            return $response;
+//        }
+//
+//        $this->refreshUserTokens($userSettings, $data);
+//
+//        return $response;
+//    }
 
     /**
      * @throws RandomException

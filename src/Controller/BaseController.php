@@ -57,4 +57,9 @@ class BaseController extends AbstractController
 
         return $settings;
     }
+
+    public function translateFlash(string $translateKey): string
+    {
+        return $this->translator->trans($translateKey);
+    }
 }

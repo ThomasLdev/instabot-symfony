@@ -43,6 +43,7 @@ class GoogleDriveClientService
             ]);
         }
 
+        // we only query a single folder, not a whole drive.
         if ('' === $folderId || null === $folderId) {
             return $this->responseService->handleResponse([
                 'error' => 'errors.drive.no_folder',
@@ -70,13 +71,6 @@ class GoogleDriveClientService
     {
         try {
             $client = $this->clientService->getClientForUser($userSettings);
-
-            if (null === $client) {
-                return [
-                    'error' => 'errors.drive.no_client',
-                ];
-            }
-
             $files = (new Drive($client))->files->listFiles($this->getQueryParameters($folderId))->getFiles();
         } catch (Exception $e) {
             return [

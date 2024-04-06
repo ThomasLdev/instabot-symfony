@@ -22,9 +22,8 @@ class DriveFilesController extends BaseController
      * @throws NotFoundExceptionInterface
      */
     #[Route('/drive/files', name: 'app_drive_files')]
-    public function index(
-        GoogleDriveClientService $driveService,
-    ): Response|RedirectResponse {
+    public function index(GoogleDriveClientService $driveService): Response|RedirectResponse
+    {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
         $settings = $this->getAppUserSettings($this->getAppUser());
