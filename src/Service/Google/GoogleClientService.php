@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace App\Service\Google;
 
 use App\Entity\UserSettings;
+use App\Model\GoogleClientResponse;
 use App\Service\Google\OAuth\GoogleOAuthTokenService;
 use App\Service\Security\EncryptionService;
 use Exception;
@@ -38,7 +39,7 @@ class GoogleClientService
      * @throws ContainerExceptionInterface
      * @throws Exception
      */
-    public function getClientForUser(UserSettings $userSettings): ?Client
+    public function getClientForUser(UserSettings $userSettings): Client
     {
         $client = new Client();
 
@@ -47,24 +48,19 @@ class GoogleClientService
         $authCode = $userSettings->getGoogleDriveAuthCode();
         $accessToken = $userSettings->getGoogleDriveToken();
 
+        // first time authorization
         if (!$accessToken && !$authCode) {
             return $client;
         }
 
-        /** @var string $authCode */
-        $response = $this->OAuthService->getToken($accessToken, $authCode, $client, $userSettings);
+        $authResponse = $this->OAuthService->getAccessToken($userSettings, $client);
 
-        if (false === $response->getSuccess() || '' === $response->getAccessToken()) {
+        // unsuccessful token retrieval or getting a new token
+        if (false === $authResponse->getSuccess() || !$authResponse->getAccessToken()) {
             return $client;
         }
 
-        $token = $this->encryptionService->decrypt($response->getAccessToken());
-
-        if (null === $token) {
-            return null;
-        }
-
-        $client->setAccessToken($token);
+        $client->setAccessToken($this->encryptionService->decrypt($authResponse->getAccessToken()));
 
         return $client;
     }

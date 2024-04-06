@@ -11,9 +11,12 @@ namespace App\Service\Google\OAuth;
 use App\Entity\UserSettings;
 use App\Helper\TokenHelper;
 use App\Model\GoogleClientResponse;
+use App\Service\Google\GoogleClientService;
 use App\Service\Security\EncryptionService;
 use Doctrine\ORM\EntityManagerInterface;
 use Google\Client;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Random\RandomException;
 use SodiumException;
 
@@ -23,8 +26,61 @@ class GoogleOAuthTokenService
         private readonly EncryptionService $encryptionService,
         private readonly EntityManagerInterface $entityManager,
         private readonly TokenHelper $tokenHelper,
-        private readonly GoogleOAuthResponseService $OAuthResponse
+        private readonly GoogleOAuthResponseService $OAuthResponse,
+        private readonly GoogleClientService $googleClientService
     ) {
+    }
+
+    /**
+     * @throws RandomException
+     * @throws SodiumException
+     */
+    public function storeAuthCodeForUser(UserSettings $userSettings, string $authCode): GoogleClientResponse
+    {
+        $userSettings->setGoogleDriveAuthCode($this->encryptionService->encrypt($authCode));
+
+        try {
+            $this->getAccessToken($userSettings);
+        } catch (NotFoundExceptionInterface|ContainerExceptionInterface|RandomException|SodiumException $e) {
+            return $this->OAuthResponse->handleResponse([]);
+        }
+
+        return $this->OAuthResponse->handleResponse([]);
+    }
+
+    /**
+     * @throws NotFoundExceptionInterface
+     * @throws RandomException
+     * @throws ContainerExceptionInterface
+     * @throws SodiumException
+     */
+    public function getAccessToken(UserSettings $userSettings, ?Client $client = null): GoogleClientResponse
+    {
+        $token = $userSettings->getGoogleDriveToken();
+
+        if ((null !== $token) && $this->tokenHelper->isValid($userSettings)) {
+            return $this->OAuthResponse->handleResponse([
+                'access_token' => $token,
+            ]);
+        }
+
+        if (null === $client) {
+            $client = $this->googleClientService->getClientForUser($userSettings);
+        }
+
+        $data = $client->fetchAccessTokenWithAuthCode(
+            $this->encryptionService->decrypt($userSettings->getGoogleDriveAuthCode())
+        );
+
+        $response = $this->OAuthResponse->handleResponse($data);
+
+        if (false === $response->getSuccess()) {
+            return $response;
+        }
+
+        $this->refreshUserTokens($userSettings, $data);
+
+        return $response;
     }
 
     /**
