@@ -11,7 +11,6 @@ namespace App\Controller;
 use App\Entity\UserSettings;
 use App\Form\UserSettingsType;
 use Doctrine\ORM\EntityManagerInterface;
-use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -28,7 +27,11 @@ class SettingsController extends BaseController
             $userSettings = $form->getData();
 
             if (false === $userSettings instanceof UserSettings) {
-                throw new RuntimeException($this->translateFlash('errors.settings.no_settings'));
+                return $this->flashOnRedirect(
+                    'error',
+                    'errors.controller.user.no_settings',
+                    self::SETTINGS_ROUTE
+                );
             }
 
             $entityManager->persist($userSettings);

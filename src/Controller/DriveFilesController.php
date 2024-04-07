@@ -26,8 +26,7 @@ class DriveFilesController extends BaseController
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        $settings = $this->getAppUserSettings($this->getAppUser());
-        $response = $driveService->getFilesForUser($settings);
+        $response = $driveService->getFilesForUser($this->getAppUserSettings($this->getAppUser()));
 
         if (false === $response->getSuccess()) {
             return $this->flashOnRedirect('error', $response->getMessage(), self::SETTINGS_ROUTE);
