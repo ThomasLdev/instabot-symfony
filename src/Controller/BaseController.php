@@ -16,7 +16,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class BaseController extends AbstractController
 {
-    protected const LOGIN_ROUTE = 'app_login';
     protected const INDEX_ROUTE = 'app_index';
     protected const SETTINGS_ROUTE = 'app_settings';
 
@@ -32,34 +31,16 @@ class BaseController extends AbstractController
         return $this->redirectToRoute($route);
     }
 
-    public function getAppUser(): User
-    {
-        $user = $this->getUser();
-
-        if (false === $user instanceof User) {
-            $this->flashOnRedirect('error', 'errors.controller.user.not_logged',self::LOGIN_ROUTE);
-        }
-
-        return $user;
-    }
-
-    public function getAppUserSettings(User $user): UserSettings
-    {
-        $settings = $user->getSettings();
-
-        if (null === $settings) {
-            $this->flashOnRedirect(
-                'error',
-                'errors.controller.user.no_settings',
-                self::SETTINGS_ROUTE
-            );
-        }
-
-        return $settings;
-    }
-
     public function translateFlash(string $translateKey): string
     {
         return $this->translator->trans($translateKey);
+    }
+
+    public function getUserSettings(): ?UserSettings
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        return $user->getSettings();
     }
 }

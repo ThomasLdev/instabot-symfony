@@ -25,21 +25,20 @@ class GoogleAuthorizeController extends BaseController
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        $client = null;
-        $settings = $this->getAppUserSettings($this->getAppUser());
+        $settings = $this->getUserSettings();
+
+        if (null === $settings) {
+            return $this->flashOnRedirect(
+                'error',
+                'errors.controller.drive.no_settings',
+                self::SETTINGS_ROUTE
+            );
+        }
 
         try {
             $client = $clientService->getClientForUser($settings);
         } catch (Exception $e) {
-            $this->flashOnRedirect(
-                'error',
-                'errors.controller.google.authorization_failed',
-                BaseController::SETTINGS_ROUTE
-            );
-        }
-
-        if (null === $client) {
-            $this->flashOnRedirect(
+            return $this->flashOnRedirect(
                 'error',
                 'errors.controller.google.authorization_failed',
                 BaseController::SETTINGS_ROUTE
@@ -58,17 +57,27 @@ class GoogleAuthorizeController extends BaseController
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        $settings = $this->getAppUserSettings($this->getAppUser());
+        $settings = $this->getUserSettings();
+
+        if (null === $settings) {
+            return $this->flashOnRedirect(
+                'error',
+                'errors.controller.drive.no_settings',
+                self::SETTINGS_ROUTE
+            );
+        }
+
         $authCode = $request->query->get('code');
 
         if (false === is_string($authCode)) {
-            $this->flashOnRedirect(
+            return $this->flashOnRedirect(
                 'error',
                 'errors.controller.google.no_code',
                 BaseController::SETTINGS_ROUTE
             );
         }
 
+        /** @var string $authCode */
         $response = $tokenService->storeAuthCodeForUser($settings, $authCode);
 
         if (false === $response->getSuccess()) {
@@ -91,7 +100,16 @@ class GoogleAuthorizeController extends BaseController
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        $settings = $this->getAppUserSettings($this->getAppUser());
+        $settings = $this->getUserSettings();
+
+        if (null === $settings) {
+            return $this->flashOnRedirect(
+                'error',
+                'errors.controller.drive.no_settings',
+                self::SETTINGS_ROUTE
+            );
+        }
+
         $settings->setGoogleDriveAuthCode(null);
         $settings->setGoogleDriveToken(null);
 

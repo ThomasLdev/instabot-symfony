@@ -20,7 +20,17 @@ class SettingsController extends BaseController
     #[Route('/settings', name: 'app_settings')]
     public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(UserSettingsType::class, $this->getAppUserSettings($this->getAppUser()));
+        $settings = $this->getUserSettings();
+
+        if (null === $settings) {
+            return $this->flashOnRedirect(
+                'error',
+                'errors.controller.user.no_settings',
+                self::SETTINGS_ROUTE
+            );
+        }
+
+        $form = $this->createForm(UserSettingsType::class, $settings);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

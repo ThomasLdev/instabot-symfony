@@ -17,10 +17,9 @@ use Google\Service\Drive;
 class GoogleDriveClientService
 {
     public function __construct(
-        private readonly GoogleClientService        $clientService,
+        private readonly GoogleClientService $clientService,
         private readonly GoogleDriveResponseService $responseService
-    )
-    {
+    ) {
     }
 
     /**
@@ -81,7 +80,7 @@ class GoogleDriveClientService
     private function getQueryParameters(string $folderId): array
     {
         return [
-            'q' => "'".$folderId."' in parents and trashed = false",
+            'q' => "'" . $folderId . "' in parents and trashed = false",
         ];
     }
 }
