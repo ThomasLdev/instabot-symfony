@@ -12,8 +12,6 @@ use App\Service\Google\GoogleClientService;
 use App\Service\Google\OAuth\GoogleOAuthTokenService;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 use Random\RandomException;
 use SodiumException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -32,7 +30,7 @@ class GoogleAuthorizeController extends BaseController
 
         try {
             $client = $clientService->getClientForUser($settings);
-        } catch (NotFoundExceptionInterface | ContainerExceptionInterface | Exception $e) {
+        } catch (Exception $e) {
             $this->flashOnRedirect(
                 'error',
                 'errors.controller.google.authorization_failed',

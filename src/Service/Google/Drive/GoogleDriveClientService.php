@@ -11,10 +11,8 @@ namespace App\Service\Google\Drive;
 use App\Entity\UserSettings;
 use App\Model\GoogleDriveResponse;
 use App\Service\Google\GoogleClientService;
+use Exception;
 use Google\Service\Drive;
-use Google\Service\Exception;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 
 class GoogleDriveClientService
 {
@@ -26,8 +24,7 @@ class GoogleDriveClientService
     }
 
     /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
     public function getFilesForUser(UserSettings $userSettings): GoogleDriveResponse
     {
@@ -64,8 +61,7 @@ class GoogleDriveClientService
     }
 
     /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
     private function getFiles(UserSettings $userSettings, string $folderId): array
     {
