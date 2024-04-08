@@ -32,10 +32,10 @@ class GoogleClientService
     }
 
     /**
-     * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * @throws SodiumException
      * @throws RandomException
+     * @throws ContainerExceptionInterface
+     * @throws SodiumException
      */
     public function getClientForUser(UserSettings $userSettings): Client
     {

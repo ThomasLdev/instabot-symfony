@@ -53,8 +53,8 @@
 
         <div class="mt-5">
             <h2 class="text-3xl p-5 text-center">Task log :</h2>
-            {% if task.logs is defined and task.logs is not same as null %}
-
+            {% if task.logs is defined and task.logs is not empty %}
+                    <p>There are logs to render =D</p>
                 {% else %}
                     <p class="text-center">No logs found</p>
             {% endif %}
