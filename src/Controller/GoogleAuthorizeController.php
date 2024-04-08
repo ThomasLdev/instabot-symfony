@@ -110,8 +110,11 @@ class GoogleAuthorizeController extends BaseController
             );
         }
 
-        $settings->setGoogleDriveAuthCode(null);
-        $settings->setGoogleDriveToken(null);
+        $settings
+            ->setGoogleDriveAuthCode(null)
+            ->setGoogleDriveToken(null)
+            ->setGoogleDriveTokenIssueTime(null)
+            ->setGoogleDriveTokenExpiry(null);
 
         $entityManager->flush();
 

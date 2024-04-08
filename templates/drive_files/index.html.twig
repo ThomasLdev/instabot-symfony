@@ -2,14 +2,13 @@
 
 <div class="text-center">
     <div class="flex flex-col w-[95%] m-auto">
-        <h1 class="text-3xl p-5">
-            See your files
-        </h1>
-        <small class="mb-5">The files will be posted in this display order</small>
-
         {% if files is defined and files is not same as null %}
-        <div class="overflow-x-auto">
-            <table class="table table-pin-rows table-pin-cols">
+            <h1 class="text-3xl p-5">
+                See your files
+            </h1>
+            <small class="mb-5">The files will be posted in this display order</small>
+            <table class="table card bg-neutral text-neutral-content">
+                <!-- head -->
                 <thead>
                 <tr>
                     <th></th>
@@ -18,32 +17,24 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for index, file in files %}
-                    <tr>
-                        <th>{{ index }}</th>
-                        <td>
-                            {% if 'image' in file.mimeType %}
-                                <i class="fa-solid fa-image"></i>
-                            {% else %}
-                                <i class="fa-solid fa-file-lines"></i>
-                            {% endif %}
-                        </td>
-                        <td>{{ file.name }}</td>
-                    </tr>
-                {% endfor %}
+                    {% for index, file in files %}
+                        <tr>
+                            <th>{{ index + 1 }}</th>
+                            <td>
+                                {% if 'image' in file.mimeType %}
+                                    <i class="fa-solid fa-image"></i>
+                                {% else %}
+                                    <i class="fa-solid fa-file-lines"></i>
+                                {% endif %}
+                            </td>
+                            <td>{{ file.name }}</td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
-                <tfoot>
-                <tr>
-                    <th></th>
-                    <td>Type</td>
-                    <td>Name</td>
-                    <th></th>
-                </tr>
-                </tfoot>
             </table>
         </div>
-    </div>
     {% else %}
         <p>No files</p>
     {% endif %}
+    </div>
 </div>

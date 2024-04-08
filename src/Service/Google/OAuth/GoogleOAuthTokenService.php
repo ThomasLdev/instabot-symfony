@@ -9,14 +9,16 @@ declare(strict_types=1);
 namespace App\Service\Google\OAuth;
 
 use App\Entity\UserSettings;
+use App\Helper\GoogleClientHelper;
 use App\Helper\TokenHelper;
 use App\Model\GoogleClientResponse;
-use App\Service\Google\GoogleClientService;
 use App\Service\Google\GoogleResponseInterface;
 use App\Service\Security\EncryptionService;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Google\Client;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Random\RandomException;
 use SodiumException;
 
@@ -30,7 +32,7 @@ class GoogleOAuthTokenService
         private readonly EntityManagerInterface $entityManager,
         private readonly TokenHelper $tokenHelper,
         private readonly GoogleOAuthResponseService $OAuthResponse,
-        private readonly GoogleClientService $googleClientService
+        private readonly GoogleClientHelper $clientHelper
     ) {
     }
 
@@ -63,14 +65,20 @@ class GoogleOAuthTokenService
     {
         $token = $userSettings->getGoogleDriveToken();
 
-        if ((null !== $token) && $this->tokenHelper->isValid($userSettings)) {
+        if (null !== $token && true === $this->tokenHelper->isValid($userSettings)) {
             return $this->OAuthResponse->handleResponse([
                 GoogleResponseInterface::ACCESS_TOKEN_KEY => $token,
             ]);
         }
 
         if (null === $client) {
-            $client = $this->googleClientService->getClientForUser($userSettings);
+            try {
+                $client = $this->clientHelper->create($userSettings);
+            } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+                return $this->OAuthResponse->handleResponse([
+                    GoogleResponseInterface::ERROR_KEY => 'errors.drive.bad_request',
+                ]);
+            }
         }
 
         $authCode = $userSettings->getGoogleDriveAuthCode();
@@ -81,15 +89,15 @@ class GoogleOAuthTokenService
             ]);
         }
 
-        $plainToken = $this->encryptionService->decrypt($authCode);
+        $plainAuthCode = $this->encryptionService->decrypt($authCode);
 
-        if (false === is_string($plainToken)) {
+        if (false === is_string($plainAuthCode)) {
             return $this->OAuthResponse->handleResponse([
                 GoogleResponseInterface::ERROR_KEY => 'errors.drive.bad_request',
             ]);
         }
 
-        $data = $client->fetchAccessTokenWithAuthCode($plainToken);
+        $data = $client->fetchAccessTokenWithAuthCode($plainAuthCode);
         $response = $this->OAuthResponse->handleResponse($data);
 
         if (false === $response->getSuccess()) {

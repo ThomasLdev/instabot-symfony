@@ -4,12 +4,19 @@
     <div class="btm-nav">
         <a href="{{ path('app_index') }}" class="text-primary active">
             <i class="fa-solid fa-house"></i>
+            <p>Home</p>
         </a>
         <a href="{{ path('app_drive_files') }}" class="text-primary">
             <i class="fa-solid fa-file"></i>
+            <p>Files</p>
+        </a>
+        <a href="{{ path('app_task_index') }}" class="text-primary">
+            <i class="fa-solid fa-list-check"></i>
+            <p>Tasks</p>
         </a>
         <a href="{{ path('app_settings') }}" class="text-primary">
             <i class="fa-solid fa-gears"></i>
+            <p>Settings</p>
         </a>
     </div>
 {% endif %}

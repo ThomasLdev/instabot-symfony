@@ -10,6 +10,10 @@ namespace App\Helper;
 
 use App\Entity\UserSettings;
 
+/**
+ * Helper class to check if the token is valid.
+ * It checks if the token is expired or not based on unix time.
+ */
 class TokenHelper
 {
     public function isValid(UserSettings $userSettings): bool
