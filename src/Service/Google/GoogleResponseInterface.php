@@ -12,5 +12,8 @@ use App\Model\BaseGoogleResponse;
 
 interface GoogleResponseInterface
 {
+    public const ERROR_KEY = 'error';
+    public const ACCESS_TOKEN_KEY = 'access_token';
+
     public function handleResponse(array $data): BaseGoogleResponse;
 }

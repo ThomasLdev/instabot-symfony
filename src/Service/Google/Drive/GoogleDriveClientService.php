@@ -11,23 +11,19 @@ namespace App\Service\Google\Drive;
 use App\Entity\UserSettings;
 use App\Model\GoogleDriveResponse;
 use App\Service\Google\GoogleClientService;
+use Exception;
 use Google\Service\Drive;
-use Google\Service\Exception;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 
 class GoogleDriveClientService
 {
     public function __construct(
-        private readonly GoogleClientService        $clientService,
+        private readonly GoogleClientService $clientService,
         private readonly GoogleDriveResponseService $responseService
-    )
-    {
+    ) {
     }
 
     /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
     public function getFilesForUser(UserSettings $userSettings): GoogleDriveResponse
     {
@@ -43,6 +39,7 @@ class GoogleDriveClientService
             ]);
         }
 
+        // we only query a single folder, not a whole drive.
         if ('' === $folderId || null === $folderId) {
             return $this->responseService->handleResponse([
                 'error' => 'errors.drive.no_folder',
@@ -63,20 +60,12 @@ class GoogleDriveClientService
     }
 
     /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
     private function getFiles(UserSettings $userSettings, string $folderId): array
     {
         try {
             $client = $this->clientService->getClientForUser($userSettings);
-
-            if (null === $client) {
-                return [
-                    'error' => 'errors.drive.no_client',
-                ];
-            }
-
             $files = (new Drive($client))->files->listFiles($this->getQueryParameters($folderId))->getFiles();
         } catch (Exception $e) {
             return [
@@ -91,7 +80,7 @@ class GoogleDriveClientService
     private function getQueryParameters(string $folderId): array
     {
         return [
-            'q' => "'".$folderId."' in parents and trashed = false",
+            'q' => "'" . $folderId . "' in parents and trashed = false",
         ];
     }
 }

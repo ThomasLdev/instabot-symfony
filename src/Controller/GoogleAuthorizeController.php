@@ -8,49 +8,41 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\User;
-use App\Entity\UserSettings;
 use App\Service\Google\GoogleClientService;
-use App\Service\Security\EncryptionService;
+use App\Service\Google\OAuth\GoogleOAuthTokenService;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 use Random\RandomException;
 use SodiumException;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
-class GoogleAuthorizeController extends AbstractController
+class GoogleAuthorizeController extends BaseController
 {
     #[Route('/google/authorize-request', name: 'app_google_authorize_request')]
     public function index(GoogleClientService $clientService): RedirectResponse
     {
-        $user = $this->getUser();
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        if (false === $user instanceof User) {
-            $this->addFlash('error', 'errors.controller.user.not_logged');
+        $settings = $this->getUserSettings();
 
-            return $this->redirectToRoute('app_index');
+        if (null === $settings) {
+            return $this->flashOnRedirect(
+                'error',
+                'errors.controller.drive.no_settings',
+                self::SETTINGS_ROUTE
+            );
         }
-
-        /** @var UserSettings $settings */
-        $settings = $user->getSettings();
 
         try {
             $client = $clientService->getClientForUser($settings);
-        } catch (NotFoundExceptionInterface | ContainerExceptionInterface | Exception $e) {
-            $this->addFlash('error', 'errors.controller.google.authorization_failed');
-
-            return $this->redirectToRoute('app_settings');
-        }
-
-        if (null === $client) {
-            $this->addFlash('error', 'errors.controller.google.authorization_failed');
-
-            return $this->redirectToRoute('app_settings');
+        } catch (Exception $e) {
+            return $this->flashOnRedirect(
+                'error',
+                'errors.controller.google.authorization_failed',
+                BaseController::SETTINGS_ROUTE
+            );
         }
 
         return $this->redirect($client->createAuthUrl());
@@ -61,72 +53,72 @@ class GoogleAuthorizeController extends AbstractController
      * @throws SodiumException
      */
     #[Route('/google/authorize-response', name: 'app_google_authorize_response')]
-    public function response(
-        Request $request,
-        EncryptionService $tokenService,
-        EntityManagerInterface $entityManager
-    ): RedirectResponse {
+    public function response(Request $request, GoogleOAuthTokenService $tokenService): RedirectResponse
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        $settings = $this->getUserSettings();
+
+        if (null === $settings) {
+            return $this->flashOnRedirect(
+                'error',
+                'errors.controller.drive.no_settings',
+                self::SETTINGS_ROUTE
+            );
+        }
+
         $authCode = $request->query->get('code');
 
         if (false === is_string($authCode)) {
-            $this->addFlash('error', 'errors.controller.google.no_code');
-
-            return $this->redirectToRoute('app_settings');
+            return $this->flashOnRedirect(
+                'error',
+                'errors.controller.google.no_code',
+                BaseController::SETTINGS_ROUTE
+            );
         }
 
-        return $this->storeAuthCodeForUser($authCode, $tokenService, $entityManager);
+        /** @var string $authCode */
+        $response = $tokenService->storeAuthCodeForUser($settings, $authCode);
+
+        if (false === $response->getSuccess()) {
+            return $this->flashOnRedirect(
+                'error',
+                'errors.controller.google.authorization_failed',
+                BaseController::INDEX_ROUTE
+            );
+        }
+
+        return $this->flashOnRedirect(
+            'success',
+            'errors.controller.google.authorization_success',
+            BaseController::INDEX_ROUTE
+        );
     }
 
     #[Route('/google/revoke-access', name: 'app_google_revoke_access')]
     public function revokeAuthCodeForUser(EntityManagerInterface $entityManager): RedirectResponse
     {
-        $user = $this->getUser();
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        if (false === $user instanceof User) {
-            $this->addFlash('error', 'errors.controller.user.not_logged');
+        $settings = $this->getUserSettings();
 
-            return $this->redirectToRoute('app_index');
+        if (null === $settings) {
+            return $this->flashOnRedirect(
+                'error',
+                'errors.controller.drive.no_settings',
+                self::SETTINGS_ROUTE
+            );
         }
-
-        /** @var UserSettings $settings */
-        $settings = $user->getSettings();
 
         $settings->setGoogleDriveAuthCode(null);
         $settings->setGoogleDriveToken(null);
 
-        $this->addFlash('success', 'form.update.token.revoke');
-
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_settings');
-    }
-
-    /**
-     * @throws RandomException
-     * @throws SodiumException
-     */
-    private function storeAuthCodeForUser(
-        string $authCode,
-        EncryptionService $tokenService,
-        EntityManagerInterface $entityManager
-    ): RedirectResponse {
-        $user = $this->getUser();
-
-        if (false === $user instanceof User) {
-            $this->addFlash('error', 'errors.controller.user.not_logged');
-
-            return $this->redirectToRoute('app_index');
-        }
-
-        /** @var UserSettings $settings */
-        $settings = $user->getSettings();
-
-        $settings->setGoogleDriveAuthCode($tokenService->encrypt($authCode));
-
-        $this->addFlash('success', 'form.update.token.granted');
-
-        $entityManager->flush();
-
-        return $this->redirectToRoute('app_settings');
+        return $this->flashOnRedirect(
+            'success',
+            'form.update.token.revoke',
+            BaseController::SETTINGS_ROUTE
+        );
     }
 }

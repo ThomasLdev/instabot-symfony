@@ -1,4 +1,6 @@
 form:
+    settings:
+        saved: 'Your settings have been saved'
     update:
         label: 'Update settings'
         token:
@@ -35,3 +37,5 @@ errors:
         general: 'There was an error getting the files from Google Drive. Please contact an administrator'
     oauth:
         bad_token: 'The token is not valid. Please try again or reset your app authorization'
+    settings:
+        no_settings: 'No settings found. Please contact an administrator'

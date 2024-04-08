@@ -13,13 +13,10 @@ use App\Service\Google\GoogleResponseInterface;
 
 class GoogleOAuthResponseService implements GoogleResponseInterface
 {
-    private const ERROR_KEY = 'error';
-    private const ACCESS_TOKEN_KEY = 'access_token';
-
     public function handleResponse(array $data): GoogleClientResponse
     {
         if (array_key_exists(self::ERROR_KEY, $data)) {
-            return $this->setResponse(false, $data['error']);
+            return $this->setResponse(false, $data[self::ERROR_KEY]);
         }
 
         if (false === array_key_exists(self::ACCESS_TOKEN_KEY, $data)) {
