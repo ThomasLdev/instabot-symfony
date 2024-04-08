@@ -38,7 +38,7 @@ class GoogleClientService
 
         try {
             $this->parametersHelper->setExtraParameters($client);
-        } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+        } catch (NotFoundExceptionInterface | ContainerExceptionInterface $e) {
             throw new RuntimeException('Google API parameters not found.');
         }
 
