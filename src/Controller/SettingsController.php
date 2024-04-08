@@ -15,9 +15,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+#[Route('/settings')]
 class SettingsController extends BaseController
 {
-    #[Route('/settings', name: 'app_settings')]
+    #[Route('/', name: 'app_settings')]
     public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
         $settings = $this->getUserSettings();

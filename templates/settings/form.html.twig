@@ -11,17 +11,17 @@
 
             <h1 class="text-4xl mb-5">{{ 'page.userSettings.title'|trans }}</h1>
 
-            <div class="flex flex-col gap-5 mb-5">
+            <div class="flex flex-col gap-5">
                 {{ form_row(settingsForm.googleDriveFolderId) }}
 
-                <div class="flex flex-col gap-5 mb-5">
+                <div class="flex flex-col gap-5">
                     <p class="text-gray-700">Google Drive authorization</p>
                 {% if driveToken is same as '' or driveToken is same as null %}
                         <a class="btn btn-lg btn-accent" href="{{ path('app_google_authorize_request') }}">Authorize the
                             app</a>
                     {% else %}
                     <a class="btn btn-lg btn-secondary" href="{{ path('app_google_revoke_access') }}">Revoke local authorization</a>
-                    <small>It does not prevent your from removing the app from your Google account authorizations</small>
+                    <small>It will reset your local tokens and revoke the application google rights</small>
                 </div>
                 {% endif %}
 
