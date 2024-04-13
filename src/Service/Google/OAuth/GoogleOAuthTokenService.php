@@ -74,7 +74,7 @@ class GoogleOAuthTokenService
         if (null === $client) {
             try {
                 $client = $this->clientHelper->create($userSettings);
-            } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+            } catch (NotFoundExceptionInterface | ContainerExceptionInterface $e) {
                 return $this->OAuthResponse->handleResponse([
                     GoogleResponseInterface::ERROR_KEY => 'errors.drive.bad_request',
                 ]);

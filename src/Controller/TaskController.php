@@ -53,7 +53,8 @@ class TaskController extends BaseController
             return $this->flashOnRedirect(
                 'success',
                 'Your task has been created successfully.',
-                'app_task_index');
+                'app_task_index'
+            );
         }
 
         return $this->render('task/new.html.twig', [
@@ -107,7 +108,13 @@ class TaskController extends BaseController
             throw $this->createAccessDeniedException('You are not authorized to delete this task.');
         }
 
-        if ($this->isCsrfTokenValid('delete'.$task->getId(), $request->getPayload()->get('_token'))) {
+        $token = $request->getPayload()->get('_token');
+
+        if (false === is_string($token)) {
+            throw $this->createAccessDeniedException('Invalid CSRF token.');
+        }
+
+        if ($this->isCsrfTokenValid('delete' . $task->getId(), $token)) {
             $entityManager->remove($task);
             $entityManager->flush();
         }

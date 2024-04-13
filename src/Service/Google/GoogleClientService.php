@@ -25,8 +25,8 @@ use SodiumException;
 class GoogleClientService
 {
     public function __construct(
-        private readonly EncryptionService       $encryptionService,
-        private readonly GoogleClientHelper      $clientHelper,
+        private readonly EncryptionService $encryptionService,
+        private readonly GoogleClientHelper $clientHelper,
         private readonly GoogleOAuthTokenService $tokenService
     ) {
     }

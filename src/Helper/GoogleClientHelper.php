@@ -38,7 +38,7 @@ class GoogleClientHelper
      */
     public function create(?UserSettings $userSettings = null): Client
     {
-        $client = new Client;
+        $client = new Client();
         $params = $this->getRequiredParameters();
 
         // for some reason unable to force https via RouterInterface.
