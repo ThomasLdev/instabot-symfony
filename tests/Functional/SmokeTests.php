@@ -8,30 +8,37 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional;
 
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class SmokeTests extends WebTestCase
 {
+    private KernelBrowser $client;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->client = static::createClient();
+    }
+
     public function testIndex(): void
     {
-        $client = static::createClient();
-        $client->request('GET', '/');
+        $this->client->request('GET', '/');
 
         self::assertResponseIsSuccessful();
     }
 
     public function testLogin(): void
     {
-        $client = static::createClient();
-        $client->request('GET', '/login');
+        $this->client->request('GET', '/login');
 
         self::assertResponseIsSuccessful();
     }
 
     public function testRegister(): void
     {
-        $client = static::createClient();
-        $client->request('GET', '/register');
+        $this->client->request('GET', '/register');
 
         self::assertResponseIsSuccessful();
     }

@@ -16,6 +16,6 @@ class ExampleTest extends UnitTestCase
      */
     public function testBasicTest(): void
     {
-        self::assertEquals(true, true);
+        self::assertTrue(true);
     }
 }

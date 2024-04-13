@@ -4,8 +4,6 @@ namespace App\Entity;
 
 use App\Repository\TaskRepository;
 use DateTimeImmutable;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -38,14 +36,10 @@ class Task
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     private ?DateTimeImmutable $lastRun = null;
 
-    #[ORM\OneToMany(targetEntity: TaskLog::class, mappedBy: 'task', orphanRemoval: true)]
-    private Collection $logs;
-
     public function __construct()
     {
         $this->createdAt = new DateTimeImmutable();
         $this->updatedAt = new DateTimeImmutable();
-        $this->logs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -133,36 +127,6 @@ class Task
     public function setLastRun(?DateTimeImmutable $lastRun): static
     {
         $this->lastRun = $lastRun;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, TaskLog>
-     */
-    public function getLogs(): Collection
-    {
-        return $this->logs;
-    }
-
-    public function addLog(TaskLog $log): static
-    {
-        if (!$this->logs->contains($log)) {
-            $this->logs->add($log);
-            $log->setTask($this);
-        }
-
-        return $this;
-    }
-
-    public function removeLog(TaskLog $log): static
-    {
-        if ($this->logs->removeElement($log)) {
-            // set the owning side to null (unless already changed)
-            if ($log->getTask() === $this) {
-                $log->setTask(null);
-            }
-        }
 
         return $this;
     }
