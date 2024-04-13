@@ -217,6 +217,9 @@ endif
 report-prepare:
 	@make exec cmd="mkdir -p reports/coverage"
 
+test-coverage:
+	@php bin/phpunit --coverage-html reports/coverage
+
 report-clean:
 	@make exec-by-root cmd="rm -rf reports/*"
 

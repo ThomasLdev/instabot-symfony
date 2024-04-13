@@ -30,7 +30,6 @@ class GoogleOAuthTokenService
     public function __construct(
         private readonly EncryptionService $encryptionService,
         private readonly EntityManagerInterface $entityManager,
-        private readonly TokenHelper $tokenHelper,
         private readonly GoogleOAuthResponseService $OAuthResponse,
         private readonly GoogleClientHelper $clientHelper
     ) {
@@ -49,7 +48,7 @@ class GoogleOAuthTokenService
 
         try {
             $authResponse = $this->getAccessToken($userSettings);
-        } catch (RandomException | SodiumException | Exception $e) {
+        } catch (RandomException | SodiumException | Exception) {
             return $this->OAuthResponse->handleResponse([]);
         }
 
@@ -65,7 +64,7 @@ class GoogleOAuthTokenService
     {
         $token = $userSettings->getGoogleDriveToken();
 
-        if (null !== $token && true === $this->tokenHelper->isValid($userSettings)) {
+        if (null !== $token && true === TokenHelper::isValid($userSettings)) {
             return $this->OAuthResponse->handleResponse([
                 GoogleResponseInterface::ACCESS_TOKEN_KEY => $token,
             ]);
@@ -74,7 +73,7 @@ class GoogleOAuthTokenService
         if (null === $client) {
             try {
                 $client = $this->clientHelper->create($userSettings);
-            } catch (NotFoundExceptionInterface | ContainerExceptionInterface $e) {
+            } catch (NotFoundExceptionInterface | ContainerExceptionInterface) {
                 return $this->OAuthResponse->handleResponse([
                     GoogleResponseInterface::ERROR_KEY => 'errors.drive.bad_request',
                 ]);

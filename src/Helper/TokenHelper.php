@@ -16,7 +16,7 @@ use App\Entity\UserSettings;
  */
 class TokenHelper
 {
-    public function isValid(UserSettings $userSettings): bool
+    public static function isValid(UserSettings $userSettings): bool
     {
         $expiry = $userSettings->getGoogleDriveTokenExpiry();
 
