@@ -33,11 +33,17 @@ class FilesHelper
 
     private function getAssociatedText(array $files, string $imageName): ?DriveFile
     {
-        $textFile = array_filter($files, static function($file) use ($imageName) {
-            return str_contains($file->getName(), $imageName);
+        $textFile = array_filter($files, function($file) use ($imageName) {
+            return ($this->getFileNameWithoutType($file->getName()) === $this->getFileNameWithoutType($imageName)
+            && str_contains($file->getMimeType(), 'text'));
         });
 
         // if more than one text file has the same name, just take the first one.
-        return $textFile[0];
+        return array_values($textFile)[0];
+    }
+
+    private function getFileNameWithoutType(string $fileName): string
+    {
+        return pathinfo($fileName, PATHINFO_FILENAME);
     }
 }
