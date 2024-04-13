@@ -10,6 +10,9 @@ form:
         email: 'Your email'
         password: 'Your password'
         password_confirmation: 'Confirm your password'
+        task:
+            name: 'Enter a task name'
+            cron_help: 'See <a class="link" href="https://hyperping.io/cron-expression-generator" target="_blank">this generator</a> for help'
     account:
         create:
             title: 'Create your account'

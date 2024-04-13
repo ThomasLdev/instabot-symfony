@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Task{% endblock %}
+
+{% block body %}
+    <div class="overflow-x-auto w-[95%] m-auto">
+        <h1 class="text-3xl p-5 text-center">Task : {{ task.name }}</h1>
+        <div class="flex justify-end mb-3 gap-3">
+            <a href="{{ path('app_task_index') }}" class="btn btn-sm btn-primary">
+                <i class="fa-solid fa-arrow-right-to-bracket rotate-180"></i>
+            </a>
+            <a href="{{ path('app_task_edit', {'id': task.id}) }}" class="btn btn-sm btn-primary">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </a>
+            {{ include('task/_delete_form.html.twig') }}
+        </div>
+        <table class="table card bg-neutral text-neutral-content">
+            <tbody>
+            <tr>
+                <th>Status</th>
+                <td>
+                    {% if task.status is not null %}
+                        {% set status = task.status %}
+
+                        <div class="{{ 'badge badge-' ~ status ~ ' gap-2' }}">
+                            {{ status }}
+                        </div>
+                    {% else %}
+                        <div>
+                            -
+                        </div>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>CreatedAt</th>
+                <td>{{ task.createdAt ? task.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>UpdatedAt</th>
+                <td>{{ task.updatedAt ? task.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>CronExpression</th>
+                <td>{{ task.cronExpression }}</td>
+            </tr>
+            <tr>
+                <th>LastRun</th>
+                <td>{{ task.lastRun ? task.lastRun|date('Y-m-d') : 'never' }}</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="mt-5">
+            <h2 class="text-3xl p-5 text-center">Task log :</h2>
+                <p class="text-center">to be implemented</p>
+        </div>
+    </div>
+{% endblock %}

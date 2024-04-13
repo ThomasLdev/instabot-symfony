@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace App\Helper;
 
+use App\Entity\UserSettings;
 use Google\Client;
 use Google\Service\Drive;
 use Psr\Container\ContainerExceptionInterface;
@@ -15,7 +16,11 @@ use Psr\Container\NotFoundExceptionInterface;
 use RuntimeException;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 
-class GoogleClientParametersHelper
+/**
+ * Helper class to create Google Client.
+ * Can be called with or without accessToken.
+ */
+class GoogleClientHelper
 {
     public const GOOGLE_API_KEY = 'google_api_key';
     public const GOOGLE_CLIENT_ID = 'google_client_id';
@@ -31,8 +36,9 @@ class GoogleClientParametersHelper
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function setExtraParameters(Client $client): void
+    public function create(?UserSettings $userSettings = null): Client
     {
+        $client = new Client();
         $params = $this->getRequiredParameters();
 
         // for some reason unable to force https via RouterInterface.
@@ -43,6 +49,12 @@ class GoogleClientParametersHelper
         $client->setClientSecret($params[self::GOOGLE_CLIENT_SECRET]);
         $client->setAccessType('offline');
         $client->addScope(Drive::DRIVE);
+
+        if (null !== $userSettings && null !== $userSettings->getGoogleDriveToken()) {
+            $client->setAccessToken($userSettings->getGoogleDriveToken());
+        }
+
+        return $client;
     }
 
     /**

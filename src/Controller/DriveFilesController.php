@@ -14,12 +14,13 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+#[Route('/drive')]
 class DriveFilesController extends BaseController
 {
     /**
      * @throws Exception
      */
-    #[Route('/drive/files', name: 'app_drive_files')]
+    #[Route('/files', name: 'app_drive_files', methods: ['GET'])]
     public function index(GoogleDriveClientService $driveService): Response|RedirectResponse
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');

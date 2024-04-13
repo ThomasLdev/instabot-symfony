@@ -12,12 +12,12 @@ class GoogleClientResponse extends BaseGoogleResponse
 {
     private string $accessToken;
 
-    public function getAccessToken(): string
+    public function getToken(): string
     {
         return $this->accessToken;
     }
 
-    public function setAccessToken(string $accessToken): static
+    public function setToken(string $accessToken): static
     {
         $this->accessToken = $accessToken;
 

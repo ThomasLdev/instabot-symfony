@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Manage your tasks{% endblock %}
+
+{% block body %}
+    <div class="overflow-x-auto w-[95%] m-auto">
+        <h1 class="text-3xl p-5 text-center">Manage your tasks</h1>
+        <table class="table card bg-neutral text-neutral-content">
+            <!-- head -->
+            <thead>
+            <tr>
+                <th></th>
+                <th>Name</th>
+                <th>Last status</th>
+                <th>Created At</th>
+                <th>Updated At</th>
+                <th>Cron expression</th>
+                <th>Last run at</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for task in tasks %}
+                <tr>
+                    <td>{{ task.id }}</td>
+                    <td>{{ task.name }}</td>
+                    <td>
+                        {% if task.status is not null %}
+                            {% set status = task.status %}
+
+                            <div class="{{ 'badge badge-' ~ status ~ ' gap-2' }}">
+                                {{ status }}
+                            </div>
+                        {% else %}
+                            <div>
+                                -
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td>{{ task.createdAt ? task.createdAt|date('d-m-Y H:i:s') : '' }}</td>
+                    <td>{{ task.updatedAt ? task.updatedAt|date('d-m-Y H:i:s') : '' }}</td>
+                    <td>{{ task.cronExpression }}</td>
+                    <td>{{ task.lastRun ? task.lastRun|date('d-m-Y H:i:s') : 'never' }}</td>
+                    <td>
+                        <div>
+                            <a href="{{ path('app_task_show', {'id': task.id}) }}" class="btn btn-sm btn-primary">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                            <a href="{{ path('app_task_edit', {'id': task.id}) }}" class="btn btn-sm btn-primary">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            {% include 'task/_delete_form.html.twig' %}
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td>no records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div class="flex justify-end">
+            <a class="btn btn-primary mt-3" href="{{ path('app_task_new') }}">Create a new task</a>
+        </div>
+    </div>
+{% endblock %}

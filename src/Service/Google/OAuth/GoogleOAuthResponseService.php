@@ -31,6 +31,6 @@ class GoogleOAuthResponseService implements GoogleResponseInterface
         return (new GoogleClientResponse())
             ->setSuccess($success)
             ->setMessage($message)
-            ->setAccessToken($token ?? '');
+            ->setToken($token ?? '');
     }
 }
