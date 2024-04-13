@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Task;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -23,6 +24,11 @@ class TaskType extends AbstractType
                 'attr' => [
                     'placeholder' => 'form.placeholders.task.name',
                 ],
+            ])
+            ->add('active', CheckboxType::class, [
+                'label' => false,
+                'help' => $this->translator->trans('form.help.task.active'),
+                'required' => false,
             ])
             ->add('cronExpression', TextType::class, [
                 'help' => $this->translator->trans('form.placeholders.task.cron_help'),

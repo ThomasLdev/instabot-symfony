@@ -36,6 +36,9 @@ class Task
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     private ?DateTimeImmutable $lastRun = null;
 
+    #[ORM\Column]
+    private ?bool $active = null;
+
     public function __construct()
     {
         $this->createdAt = new DateTimeImmutable();
@@ -127,6 +130,18 @@ class Task
     public function setLastRun(?DateTimeImmutable $lastRun): static
     {
         $this->lastRun = $lastRun;
+
+        return $this;
+    }
+
+    public function isActive(): ?bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): static
+    {
+        $this->active = $active;
 
         return $this;
     }

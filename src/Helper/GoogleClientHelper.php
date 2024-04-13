@@ -15,6 +15,7 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use RuntimeException;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * Helper class to create Google Client.
@@ -28,7 +29,8 @@ class GoogleClientHelper
     public const GOOGLE_APP_NAME = 'Instabot';
 
     public function __construct(
-        private readonly ContainerBagInterface $containerBag
+        private readonly ContainerBagInterface $containerBag,
+        private readonly RouterInterface $router
     ) {
     }
 
@@ -40,9 +42,10 @@ class GoogleClientHelper
     {
         $client = new Client();
         $params = $this->getRequiredParameters();
+        $uri = $this->router->getContext()->getHost();
 
         // for some reason unable to force https via RouterInterface.
-        $client->setRedirectUri('https://' . $_SERVER['HTTP_HOST'] . '/google/authorize-response');
+        $client->setRedirectUri('https://' . $uri . '/google/authorize-response');
         $client->setApplicationName(self::GOOGLE_APP_NAME);
         $client->setDeveloperKey($params[self::GOOGLE_API_KEY]);
         $client->setClientId($params[self::GOOGLE_CLIENT_ID]);

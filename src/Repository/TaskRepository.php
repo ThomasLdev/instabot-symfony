@@ -45,4 +45,15 @@ class TaskRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findTasksToRun(): array
+    {
+        $builder = $this->createQueryBuilder('t')
+            ->andWhere('t.active = true')
+            ->andWhere('t.user IS NOT NULL');
+
+        $result = $builder->getQuery()->getResult();
+
+        return is_array($result) ? $result : [];
+    }
 }
