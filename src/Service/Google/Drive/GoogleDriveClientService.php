@@ -67,6 +67,35 @@ class GoogleDriveClientService
     }
 
     /**
+     * @throws NotFoundExceptionInterface
+     * @throws \Google\Service\Exception
+     * @throws RandomException
+     * @throws ContainerExceptionInterface
+     * @throws \SodiumException
+     */
+    public function downloadFiles(array $filesToPost, UserSettings $userSettings): array
+    {
+        $localFilesPaths = [];
+        $client = $this->clientService->getClientForUser($userSettings);
+        $driveClient = new Drive($client);
+
+        /** @var DriveFile $file */
+        foreach ($filesToPost as $file) {
+            $fileMetadata = $driveClient->files->get($file->getId(), [
+                'alt' => 'media',
+            ]);
+
+            /** @var Response $fileMetadata */
+            $localFilesPaths[] = $this->downloadFileHelper->storeAndGetPath(
+                $fileMetadata->getBody()->getContents(),
+                $file->getName()
+            );
+        }
+
+        return $localFilesPaths;
+    }
+
+    /**
      * @throws Exception
      */
     private function getFiles(UserSettings $userSettings, string $folderId): array
@@ -74,7 +103,7 @@ class GoogleDriveClientService
         try {
             $client = $this->clientService->getClientForUser($userSettings);
             $files = (new Drive($client))->files->listFiles($this->getListQueryParameters($folderId))->getFiles();
-        } catch (NotFoundExceptionInterface|ContainerExceptionInterface|Exception $e) {
+        } catch (NotFoundExceptionInterface | ContainerExceptionInterface | Exception $e) {
             return [
                 'error' => 'errors.drive.general',
                 'code' => $e->getCode(),
@@ -90,32 +119,5 @@ class GoogleDriveClientService
             'q' => "'" . $folderId . "' in parents and trashed = false",
             'orderBy' => 'createdTime',
         ];
-    }
-
-    /**
-     * @throws NotFoundExceptionInterface
-     * @throws \Google\Service\Exception
-     * @throws RandomException
-     * @throws ContainerExceptionInterface
-     * @throws \SodiumException
-     */
-    public function downloadFiles(array $filesToPost, UserSettings $userSettings): array
-    {
-        $localFilesPaths = [];
-        $client = $this->clientService->getClientForUser($userSettings);
-        $driveClient = new Drive($client);
-
-        /** @var DriveFile $file */
-        foreach ($filesToPost as $file) {
-            $fileMetadata = $driveClient->files->get($file->getId(), ['alt' => 'media']);
-
-            /** @var Response $fileMetadata */
-            $localFilesPaths[] = $this->downloadFileHelper->storeAndGetPath(
-                $fileMetadata->getBody()->getContents(),
-                $file->getName()
-            );
-        }
-
-        return $localFilesPaths;
     }
 }

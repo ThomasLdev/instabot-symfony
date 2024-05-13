@@ -6,13 +6,18 @@ form:
         token:
             revoke: 'Google Drive access has been revoked'
             granted: 'Google Drive access has been granted'
+    labels:
+        drive: 'Google Drive Folder ID'
+        instagram: 'Instagram Access Token'
+        task:
+            cron: 'Task Cron'
+            name: 'Task Name'
     placeholders:
         email: 'Your email'
         password: 'Your password'
         password_confirmation: 'Confirm your password'
-        drive:
-            folder_id: 'Google Drive folder ID'
-        instagram_token: 'Instagram token'
+        drive_folder_id: '15lwsSuhBu...'
+        instagram_token: 'IGQVJ...'
         task:
             name: 'Enter a task name'
             cron_help: 'See <a class="link" href="https://hyperping.io/cron-expression-generator" target="_blank">this generator</a> for help'

@@ -18,7 +18,7 @@ class TokenHelperTest extends TestCase
 
     private UserSettings $userSettings;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 

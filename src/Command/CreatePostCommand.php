@@ -29,10 +29,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class CreatePostCommand extends Command
 {
     public function __construct(
-        private readonly EntityManagerInterface   $entityManager,
+        private readonly EntityManagerInterface $entityManager,
         private readonly TaskRunnerService $taskRunnerService,
-    )
-    {
+    ) {
         parent::__construct();
     }
 
@@ -64,9 +63,9 @@ class CreatePostCommand extends Command
                 continue;
             }
 
-//            if ($this->isTaskDue($task)) {
-                $this->taskRunnerService->run($task);
-//            }
+            //            if ($this->isTaskDue($task)) {
+            $this->taskRunnerService->run($task);
+            //            }
         }
 
         $io->success('All tasks have been processed. Check the logs for further details.');

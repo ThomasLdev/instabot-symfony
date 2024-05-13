@@ -13,21 +13,22 @@ class UserSettingsType extends AbstractType
 {
     public function __construct(
         private readonly TranslatorInterface $translator
-    ) { }
+    ) {
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('googleDriveFolderId', TextType::class, [
                 'required' => false,
-                'label' => false,
+                'label' => $this->translator->trans('form.labels.drive'),
                 'attr' => [
-                    'placeholder' => $this->translator->trans('form.placeholders.drive.folder_id'),
+                    'placeholder' => $this->translator->trans('form.placeholders.drive_folder_id'),
                 ],
             ])
             ->add('instagramToken', TextType::class, [
                 'required' => false,
-                'label' => false,
+                'label' => $this->translator->trans('form.labels.instagram'),
                 'attr' => [
                     'placeholder' => $this->translator->trans('form.placeholders.instagram_token'),
                 ],

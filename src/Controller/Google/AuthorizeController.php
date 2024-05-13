@@ -40,7 +40,7 @@ class AuthorizeController extends BaseController
 
         try {
             $client = $clientService->getClientForUser($settings);
-        } catch (Exception|NotFoundExceptionInterface|ContainerExceptionInterface) {
+        } catch (Exception | NotFoundExceptionInterface | ContainerExceptionInterface) {
             return $this->flashOnRedirect(
                 'error',
                 'errors.controller.google.authorization_failed',

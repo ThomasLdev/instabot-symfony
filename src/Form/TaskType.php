@@ -21,6 +21,7 @@ class TaskType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
+                'label' => $this->translator->trans('form.labels.task.name'),
                 'attr' => [
                     'placeholder' => 'form.placeholders.task.name',
                 ],
@@ -32,6 +33,7 @@ class TaskType extends AbstractType
             ])
             ->add('cronExpression', TextType::class, [
                 'help' => $this->translator->trans('form.placeholders.task.cron_help'),
+                'label' => $this->translator->trans('form.labels.task.cron'),
                 'attr' => [
                     'value' => '0 0 * * *',
                 ],

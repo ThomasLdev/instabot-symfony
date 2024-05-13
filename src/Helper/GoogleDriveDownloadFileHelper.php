@@ -19,7 +19,7 @@ class GoogleDriveDownloadFileHelper
 
     public function storeAndGetPath(string $blob, string $fileName): string
     {
-        $path = $this->getTempDir() . DIRECTORY_SEPARATOR .  $fileName;
+        $path = $this->getTempDir() . DIRECTORY_SEPARATOR . $fileName;
 
         file_put_contents($path, $blob);
 

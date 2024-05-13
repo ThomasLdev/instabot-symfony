@@ -1,5 +1,4 @@
 {% block form_row %}
-    {{ form_label(form) }}
     {{ form_widget(form) }}
 {% endblock %}
 
@@ -20,6 +19,7 @@
 
 {% block text_widget %}
     <div class="form-control">
+        <label for="{{ form.vars.id }}" class="mb-2 text-gray-700">{{ form.vars.label }}</label>
         {{ form_widget(form, {'attr': {'class': 'input input-bordered input-primary w-full'}}) }}
         {{ form_help(form) }}
         {{ form_errors(form) }}

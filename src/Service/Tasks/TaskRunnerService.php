@@ -26,7 +26,8 @@ class TaskRunnerService
         private readonly GoogleDriveClientService $googleDriveService,
         private readonly LoggerInterface $logger,
         private readonly FilesHelper $filesHelper
-    ) { }
+    ) {
+    }
 
     /**
      * @throws Exception
@@ -63,7 +64,7 @@ class TaskRunnerService
 
         try {
             $localFiles = $this->googleDriveService->downloadFiles($fileToPost, $settings);
-        } catch (\Google\Service\Exception|ContainerExceptionInterface|RandomException|SodiumException) {
+        } catch (\Google\Service\Exception | ContainerExceptionInterface | RandomException | SodiumException) {
             $this->logger->error('Error when trying to download files for user ' . $username);
 
             return;
@@ -71,7 +72,7 @@ class TaskRunnerService
 
         $test = $localFiles;
 
-//        $this->graphApiService->postImage($localFiles, $settings);
+        //        $this->graphApiService->postImage($localFiles, $settings);
     }
 
     /**
