@@ -3,13 +3,14 @@
 {% block title %}Manage your tasks{% endblock %}
 
 {% block body %}
-    <div class="overflow-x-auto w-[95%] m-auto">
+    <div class="w-[95%] m-auto">
         <h1 class="text-3xl p-5 text-center">Manage your tasks</h1>
         <table class="table card bg-neutral text-neutral-content">
             <!-- head -->
             <thead>
             <tr>
                 <th></th>
+                <th>Active</th>
                 <th>Name</th>
                 <th>Last status</th>
                 <th>Created At</th>
@@ -20,9 +21,18 @@
             </tr>
             </thead>
             <tbody>
-            {% for task in tasks %}
+            {% for index, task in tasks %}
                 <tr>
-                    <td>{{ task.id }}</td>
+                    <td>{{ index + 1 }}</td>
+                    <td>
+                        {% if task.active %}
+                            <div class="badge badge-success gap-2">
+                            </div>
+                        {% else %}
+                            <div class="badge badge-error gap-2">
+                            </div>
+                        {% endif %}
+                    </td>
                     <td>{{ task.name }}</td>
                     <td>
                         {% if task.status is not null %}

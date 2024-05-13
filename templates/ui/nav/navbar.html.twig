@@ -1,6 +1,6 @@
 {% set userIconClass = app.user ? 'fa-solid' : 'fa-regular' %}
 
-{% if app.user and app.user.isVerified is same as true %}
+{% if app.user %}
     <div class="btm-nav">
         <a href="{{ path('app_index') }}" class="text-primary active">
             <i class="fa-solid fa-house"></i>

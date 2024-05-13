@@ -1,16 +1,6 @@
 {% block form_row %}
-    <div class="flex flex-col mb-5">
-        {% if label is not empty %}
-            <label for="{{ id }}" class="mb-2 text-gray-700">{{ label|trans }}</label>
-        {% endif %}
-        <div class="form-control">
-            {{ form_widget(form, {'attr': {'class': 'input input-bordered input-primary w-full'}}) }}
-            {% dump(form) %}
-            <p class="mt-2">{{ form.vars.help|raw }}</p>
-            {{ form_errors(form) }}
-        </div>
-    </div>
-{% endblock form_row %}
+    {{ form_widget(form) }}
+{% endblock %}
 
 {% block form_errors %}
     {% if errors|length > 0 -%}
@@ -25,4 +15,48 @@
 {% block re_captcha_row %}
     <div id="{{ id }}" data-toggle="recaptcha" data-type="{{ type }}">
     </div>
+{% endblock %}
+
+{% block text_widget %}
+    <div class="form-control">
+        <label for="{{ form.vars.id }}" class="mb-2 text-gray-700">{{ form.vars.label }}</label>
+        {{ form_widget(form, {'attr': {'class': 'input input-bordered input-primary w-full'}}) }}
+        {{ form_help(form) }}
+        {{ form_errors(form) }}
+    </div>
+{% endblock %}
+
+{% block email_widget %}
+    {{ form_widget(form, {'attr': {'class': 'input input-bordered input-primary w-full'}}) }}
+    {{ form_help(form) }}
+    {{ form_errors(form) }}
+{% endblock %}
+
+{% block password_widget %}
+    {{ form_widget(form, {'attr': {'class': 'input input-bordered input-primary w-full'}}) }}
+    {{ form_help(form) }}
+    {{ form_errors(form) }}
+{% endblock %}
+
+{% block checkbox_widget %}
+    <div class="flex items-center">
+        <label class="label cursor-pointer mr-3">
+            <input
+                class="checkbox checkbox-primary"
+                type="checkbox"
+                {{ block('widget_attributes') }}
+                {% if value is defined %} value="{{ value }}"{% endif %}
+                {% if checked %} checked="checked"{% endif %}
+            />
+        </label>
+        {{ form_help(form) }}
+    </div>
+{% endblock %}
+
+{% block form_help %}
+    <p class="mt-1">{{ form.vars.help|raw }}</p>
+{% endblock %}
+
+{% block form_label %}
+    <label for="{{ id }}" class="mb-2 text-gray-700"></label>
 {% endblock %}

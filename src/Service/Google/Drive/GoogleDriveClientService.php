@@ -9,16 +9,23 @@ declare(strict_types=1);
 namespace App\Service\Google\Drive;
 
 use App\Entity\UserSettings;
+use App\Helper\GoogleDriveDownloadFileHelper;
 use App\Model\GoogleDriveResponse;
 use App\Service\Google\GoogleClientService;
 use Exception;
 use Google\Service\Drive;
+use Google\Service\Drive\DriveFile;
+use GuzzleHttp\Psr7\Response;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Random\RandomException;
 
 class GoogleDriveClientService
 {
     public function __construct(
         private readonly GoogleClientService $clientService,
-        private readonly GoogleDriveResponseService $responseService
+        private readonly GoogleDriveResponseService $responseService,
+        private readonly GoogleDriveDownloadFileHelper $downloadFileHelper
     ) {
     }
 
@@ -60,14 +67,43 @@ class GoogleDriveClientService
     }
 
     /**
+     * @throws NotFoundExceptionInterface
+     * @throws \Google\Service\Exception
+     * @throws RandomException
+     * @throws ContainerExceptionInterface
+     * @throws \SodiumException
+     */
+    public function downloadFiles(array $filesToPost, UserSettings $userSettings): array
+    {
+        $localFilesPaths = [];
+        $client = $this->clientService->getClientForUser($userSettings);
+        $driveClient = new Drive($client);
+
+        /** @var DriveFile $file */
+        foreach ($filesToPost as $file) {
+            $fileMetadata = $driveClient->files->get($file->getId(), [
+                'alt' => 'media',
+            ]);
+
+            /** @var Response $fileMetadata */
+            $localFilesPaths[] = $this->downloadFileHelper->storeAndGetPath(
+                $fileMetadata->getBody()->getContents(),
+                $file->getName()
+            );
+        }
+
+        return $localFilesPaths;
+    }
+
+    /**
      * @throws Exception
      */
     private function getFiles(UserSettings $userSettings, string $folderId): array
     {
         try {
             $client = $this->clientService->getClientForUser($userSettings);
-            $files = (new Drive($client))->files->listFiles($this->getQueryParameters($folderId))->getFiles();
-        } catch (Exception $e) {
+            $files = (new Drive($client))->files->listFiles($this->getListQueryParameters($folderId))->getFiles();
+        } catch (NotFoundExceptionInterface | ContainerExceptionInterface | Exception $e) {
             return [
                 'error' => 'errors.drive.general',
                 'code' => $e->getCode(),
@@ -77,10 +113,11 @@ class GoogleDriveClientService
         return $files;
     }
 
-    private function getQueryParameters(string $folderId): array
+    private function getListQueryParameters(string $folderId): array
     {
         return [
             'q' => "'" . $folderId . "' in parents and trashed = false",
+            'orderBy' => 'createdTime',
         ];
     }
 }

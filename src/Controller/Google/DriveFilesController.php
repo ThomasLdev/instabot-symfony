@@ -6,8 +6,9 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Google;
 
+use App\Controller\BaseController;
 use App\Service\Google\Drive\GoogleDriveClientService;
 use Exception;
 use Symfony\Component\HttpFoundation\RedirectResponse;

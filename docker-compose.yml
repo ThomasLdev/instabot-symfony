@@ -49,15 +49,16 @@ services:
         platform: linux/x86_64
         container_name: ${COMPOSE_PROJECT_NAME}-mysql
         restart: 'no'
-        command: --innodb-use-native-aio=${INNODB_USE_NATIVE_AIO:-1} --sql_mode=${SQL_MODE:-"ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"}
+#        command: --innodb-use-native-aio=${INNODB_USE_NATIVE_AIO:-1} --sql_mode=${SQL_MODE:-"ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"}
         environment:
+            MYSQL_ROOT_USER: root
             MYSQL_USER: instabot
             MYSQL_ROOT_PASSWORD: secret
             MYSQL_DATABASE: instabot
         ports:
             - "3306:3306"
         volumes:
-            - ./var/mysql-data:/var/lib/mysql:delegated
+            - mysql:/var/lib/mysql:delegated
             - ./docker/dev/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
         networks:
             - symfony
@@ -75,3 +76,6 @@ services:
 networks:
     symfony:
         name: symfony
+
+volumes:
+    mysql: {}
