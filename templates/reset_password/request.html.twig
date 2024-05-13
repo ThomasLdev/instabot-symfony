@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Reset your password{% endblock %}
+
+{% block body %}
+    <div class="hero min-h-screen">
+        <div class="min-w-[25%]">
+            {{ form_start(requestForm) }}
+
+            <h1 class="text-4xl mb-5">
+                Reset your password
+            </h1>
+
+            <div class="flex flex-col mb-5">
+                {{ form_row(requestForm.email) }}
+            </div>
+
+            <div class="flex flex-col mb-3">
+                <button class="btn btn-lg btn-accent w-full"
+                        type="submit"
+                >
+                    Send password reset email
+                </button>
+                <a href="{{ path('app_login') }}" class="link mt-2">back to login</a>
+            </div>
+            {{ form_end(requestForm) }}
+        </div>
+    </div>
+{% endblock %}

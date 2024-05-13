@@ -8,6 +8,10 @@
     min-height: 90vh;
 }
 
+.grecaptcha-badge {
+    display: none;
+}
+
 .alert-success {
     border-color: var(--fallback-su,oklch(var(--su)/0.2));
     --tw-text-opacity: 1;

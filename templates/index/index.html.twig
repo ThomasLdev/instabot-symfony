@@ -15,16 +15,12 @@
             {% if not app.user %}
                 <p class="py-6">
                     Please <a class="link" href="{{ path('app_login') }}">log in</a>
-                     or <a class="link" href="{{ path('app_register') }}">create an account</a></p>
+                    or <a class="link" href="{{ path('app_register') }}">create an account</a></p>
             {% endif %}
 
             {% if app.user %}
-                {% if app.user.isVerified is same as false %}
-                    <p class="py-6">You have an unconfirmed account. Please check your emails to activate it !</p>
-                {% else %}
-                    <p class="py-6">You are logged in as {{ app.user.email }}</p>
-                    <a href="{{ path('app_logout') }}" class="link">Logout</a>
-                {% endif %}
+                <p class="py-6">You are logged in as {{ app.user.email }}</p>
+                <a href="{{ path('app_logout') }}" class="link">Logout</a>
             {% endif %}
         </div>
     </div>

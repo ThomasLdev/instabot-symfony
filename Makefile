@@ -384,3 +384,27 @@ composer-require-checker: ## Checks the defined dependencies against your code
 
 composer-unused: ## Shows unused packages by scanning and comparing package namespaces against your code
 	@make exec-bash cmd="XDEBUG_MODE=off php ./vendor/bin/composer-unused"
+
+dump:
+	@docker compose exec -T mysql mysqldump -u "root" -psecret instabot_dev | gzip > ./var/backups/instabot_dev_$(shell date +%Y_%m_%d_%H_%M_%S).gz
+	@echo "The database has been dumped in var/backups"
+
+dump-test:
+	@docker compose exec -T mysql mysqldump -u "root" -psecret instabot_test | gzip > ./var/backups/instabot_$(shell date +%Y_%m_%d_%H_%M_%S).gz
+	@echo "The database has been dumped in var/backups"
+
+restore: unset-db
+	@gunzip < $(FILE) | docker compose exec -T mysql mysql -u"root" -p"secret" instabot_dev
+	@echo "The dev database has been restored"
+
+restore-test: unset-db-test
+	@gunzip < $(FILE) | docker compose exec -T mysql mysql -u"root" -p"secret" instabot
+	@echo "The test database has been restored"
+
+unset-db:
+	@docker compose exec -T mysql mysql -u"root" -p"secret" -e "DROP DATABASE IF EXISTS instabot_dev;"
+	@docker compose exec -T mysql mysql -u"root" -p"secret" -e "CREATE DATABASE instabot_dev;"
+
+unset-db-test:
+	@docker compose exec -T mysql mysql -u"root" -p"secret" -e "DROP DATABASE IF EXISTS instabot;"
+	@docker compose exec -T mysql mysql -u"root" -p"secret" -e "CREATE DATABASE instabot;"

@@ -6,19 +6,22 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Google;
 
+use App\Controller\BaseController;
 use App\Service\Google\GoogleClientService;
 use App\Service\Google\OAuth\GoogleOAuthTokenService;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Random\RandomException;
 use SodiumException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
-class GoogleAuthorizeController extends BaseController
+class AuthorizeController extends BaseController
 {
     #[Route('/google/authorize-request', name: 'app_google_authorize_request')]
     public function index(GoogleClientService $clientService): RedirectResponse
@@ -37,7 +40,7 @@ class GoogleAuthorizeController extends BaseController
 
         try {
             $client = $clientService->getClientForUser($settings);
-        } catch (Exception) {
+        } catch (Exception|NotFoundExceptionInterface|ContainerExceptionInterface) {
             return $this->flashOnRedirect(
                 'error',
                 'errors.controller.google.authorization_failed',
@@ -90,7 +93,7 @@ class GoogleAuthorizeController extends BaseController
 
         return $this->flashOnRedirect(
             'success',
-            'errors.controller.google.authorization_success',
+            'form.update.token.granted',
             BaseController::INDEX_ROUTE
         );
     }

@@ -10,6 +10,9 @@ form:
         email: 'Your email'
         password: 'Your password'
         password_confirmation: 'Confirm your password'
+        drive:
+            folder_id: 'Google Drive folder ID'
+        instagram_token: 'Instagram token'
         task:
             name: 'Enter a task name'
             cron_help: 'See <a class="link" href="https://hyperping.io/cron-expression-generator" target="_blank">this generator</a> for help'
@@ -17,11 +20,6 @@ form:
         create:
             title: 'Create your account'
             send: 'Register'
-    label:
-        drive:
-            token: 'Google Drive token'
-            folder_id: 'Google Drive folder ID'
-        instagram_token: 'Instagram token'
     help:
         task:
             active: 'Check this box to enable/disable the task'
